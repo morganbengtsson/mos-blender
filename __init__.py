@@ -12,6 +12,7 @@ import bpy
 from bpy_extras.io_utils import ExportHelper
 import xml.etree.cElementTree as ET
 import xml.dom.minidom as MD
+import os
 
 class ExportMyFormat(bpy.types.Operator, ExportHelper):
     bl_idname = "export_sirkel_level.slf"
@@ -20,7 +21,7 @@ class ExportMyFormat(bpy.types.Operator, ExportHelper):
     filename_ext = ".slf"
 
     def execute(self, context):
-        path = bpy.path.abspath('//') #root directory
+        dir = os.path.dirname(self.filepath)
         objects = context.scene.objects
         root = ET.Element("scene")
         for ob in objects:
@@ -31,8 +32,9 @@ class ExportMyFormat(bpy.types.Operator, ExportHelper):
             object_field.set("z", str(ob.location[2]))
             object_field.set("angle", str(ob.rotation_euler[2]))
             object_field.text = ob.name
-            bpy.ops.export_scene.obj(filepath = str(path + ob.name + '.obj'), use_normals=True, use_uvs=True, use_triangles=True)
+            bpy.ops.export_scene.obj(filepath=os.path.join(dir, ob.name + '.obj'), use_normals=True, use_uvs=True, use_triangles=True)
         xml = MD.parseString(ET.tostring(root))
+
         file = open(self.filepath, "w")
         file.write(xml.toprettyxml())
         file.close()
