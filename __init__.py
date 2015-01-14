@@ -1,10 +1,10 @@
 bl_info = {
-    "name":         "Sirkel level format",
+    "name":         "Room level format",
     "author":       "Morgan Bengtsson",
-    "blender":      (2, 6, 9),
+    "blender":      (2, 7, 1),
     "version":      (0, 0, 1),
     "location":     "File > Import-Export",
-    "description":  "Export Sirkel level",
+    "description":  "Export Room level",
     "category":     "Import-Export"
 }
         
@@ -15,32 +15,37 @@ import xml.dom.minidom as MD
 import os
 import mathutils
 import copy
+from mo import materials, meshes
 
 
 def add_to_element(blender_object, element, dir):
 
-    blender_object.select = True
-    object_field = ET.SubElement(element, blender_object.get("type") or "object")
+    object_field = ET.SubElement(element, blender_object.get('type') or 'mesh') #todo change to object
     object_field.set("name", blender_object.name)
-    object_field.set("x", str(blender_object.location[0]))
-    object_field.set("y", str(blender_object.location[1]))
-    object_field.set("z", str(blender_object.location[2]))
+
+    location = blender_object.location
+
+    object_field.set("x", str(location[0]))
+    object_field.set("y", str(location[1]))
+    object_field.set("z", str(location[2]))
     object_field.set("angle", str(blender_object.rotation_euler[2]))
-    object_field.set("level", str(blender_object.get("level")))
-    me = blender_object.data
-    if me.uv_textures.active is not None:
-        for tf in me.uv_textures.active.data:
-            if tf.image:
-                img = tf.image.name
-                object_field.set("texture", str(img))
+    object_field.set("mesh", str(blender_object.get("mesh")))
+    if blender_object.active_material:
+        object_field.set("material", str(blender_object.active_material.name + ".material"))
+    if blender_object.get("level"):
+        object_field.set("level", str(blender_object.get("level")))
 
-    object_field.text = blender_object.name
-    matrix = copy.copy(blender_object.matrix_world)
-    blender_object.matrix_world = mathutils.Matrix.Identity(4)
-    bpy.ops.export_scene.obj(use_selection=True,filepath=os.path.join(dir, blender_object.name + '.obj'), use_normals=True, use_uvs=True, use_triangles=True, axis_forward='Y', axis_up='Z')
-    blender_object.select = False #Reset select
-    blender_object.matrix_world = matrix #Reset matrix
+    if "texture" in blender_object:
+        object_field.set("texture", blender_object.get("texture"))
+    if "lightmap" in blender_object:
+        object_field.set("lightmap", blender_object.get("lightmap"))
+    if blender_object.active_material:
+        diffuse_color = blender_object.active_material.diffuse_color
+        object_field.set("r", str(diffuse_color[0]))
+        object_field.set("g", str(diffuse_color[1]))
+        object_field.set("b", str(diffuse_color[2]))
 
+    return object_field
 
 def add_popup(blender_object, element):
     object_field = ET.SubElement(element, "popup")
@@ -51,38 +56,25 @@ def add_popup(blender_object, element):
 
 
 class ExportMyFormat(bpy.types.Operator, ExportHelper):
-    bl_idname = "export_sirkel_level.slf"
-    bl_label = "Sirkel level format"
+    bl_idname = "export_rom_level.rlf"
+    bl_label = "Room level format"
     bl_options = {'PRESET'}
-    filename_ext = ".slf"
+    filename_ext = ".rlf"
 
     #Todo: Export textures along with obj files.
     def execute(self, context):
+        graphics_objects = [o for o in bpy.data.objects if (o.type == 'MESH' or o.type == 'EMPTY') and not o.parent]
+
+        root = ET.Element("level")
+        root.set("lightmap", str(context.scene.get("lightmap")))
         dir = os.path.dirname(self.filepath)
 
-        physics_objects = context.scene.objects.get("Physics").children
-        graphics_objects = context.scene.objects.get("Graphics").children
-        popups = context.scene.objects.get("Popups").children
-        start = context.scene.objects.get("Start")
-        stop = context.scene.objects.get("Stop")
-
-        root = ET.Element("scene")
-        #root.set("nextLevel", context.scene.nextLevel)
-        physics = ET.SubElement(root, "physics")
-        graphics = ET.SubElement(root, "graphics")
-
-        for ob in physics_objects:
-            ob.select = False
-        for ob in physics_objects:
-            add_to_element(ob, physics, dir)
-
-        for ob in graphics_objects:
-            ob.select = False
-        for ob in graphics_objects:
-            add_to_element(ob, graphics, dir)
-
-        for ob in popups:
-            add_popup(ob, root)
+        for go in graphics_objects:
+            field = add_to_element(go, root, dir)
+            for po in go.children:
+                field2 = add_to_element(po, field, dir)
+                for poo in po.children:
+                    add_to_element(poo, field2, dir)
 
         xml = MD.parseString(ET.tostring(root))
 
@@ -90,11 +82,16 @@ class ExportMyFormat(bpy.types.Operator, ExportHelper):
         file.write(xml.toprettyxml())
         file.close()
 
+        print("Writing materials")
+        materials.write(dir)
+        print("Writing meshes")
+        meshes.write(dir)
+
         return {'FINISHED'}
 
 
 def menu_func(self, context):
-    self.layout.operator(ExportMyFormat.bl_idname, text="Sirkel level format(.slf)")
+    self.layout.operator(ExportMyFormat.bl_idname, text="Room level format(.rlf)")
 
 
 def register():
