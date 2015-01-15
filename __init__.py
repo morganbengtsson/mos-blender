@@ -39,11 +39,10 @@ def add_to_element(blender_object, element, dir):
         object_field.set("texture", blender_object.get("texture"))
     if "lightmap" in blender_object:
         object_field.set("lightmap", blender_object.get("lightmap"))
-    if blender_object.active_material:
-        diffuse_color = blender_object.active_material.diffuse_color
-        object_field.set("r", str(diffuse_color[0]))
-        object_field.set("g", str(diffuse_color[1]))
-        object_field.set("b", str(diffuse_color[2]))
+    else:
+        #TODO: Load from level property!
+        object_field.set("lightmap", "lightmap.png")
+
 
     return object_field
 
