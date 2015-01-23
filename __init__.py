@@ -39,9 +39,9 @@ def add_to_element(blender_object, element, dir):
         object_field.set("texture", blender_object.get("texture"))
     if "lightmap" in blender_object:
         object_field.set("lightmap", blender_object.get("lightmap"))
-    else:
+    #else:
         #TODO: Load from level property!
-        object_field.set("lightmap", "lightmap.png")
+        #object_field.set("lightmap", "lightmap.png")
 
 
     return object_field
@@ -62,7 +62,7 @@ class ExportMyFormat(bpy.types.Operator, ExportHelper):
 
     #Todo: Export textures along with obj files.
     def execute(self, context):
-        graphics_objects = [o for o in bpy.data.objects if (o.type == 'MESH' or o.type == 'EMPTY') and not o.parent]
+        graphics_objects = [o for o in bpy.data.objects if (o.type == 'MESH' or (o.type == 'EMPTY' and o.children)) and not o.parent]
 
         root = ET.Element("level")
         root.set("lightmap", str(context.scene.get("lightmap")))
