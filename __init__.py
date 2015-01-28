@@ -23,12 +23,14 @@ def add_to_element(blender_object, element, dir):
     object_field = ET.SubElement(element, blender_object.get('type') or 'mesh') #todo change to object
     object_field.set("name", blender_object.name)
 
-    location = blender_object.location
+    location = copy.copy(blender_object.location)
+    location[0] = blender_object.matrix_local[0][3]
+    location[1] = blender_object.matrix_local[1][3]
+    location[2] = blender_object.matrix_local[2][3]
 
     object_field.set("x", str(location[0]))
     object_field.set("y", str(location[1]))
     object_field.set("z", str(location[2]))
-    object_field.set("angle", str(blender_object.rotation_euler[2]))
     object_field.set("mesh", str(blender_object.get("mesh")))
     if blender_object.active_material:
         object_field.set("material", str(blender_object.active_material.name + ".material"))
