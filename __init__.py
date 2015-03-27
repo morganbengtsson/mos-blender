@@ -10,43 +10,63 @@ bl_info = {
         
 import bpy
 from bpy_extras.io_utils import ExportHelper
-import xml.etree.cElementTree as ET
-import xml.dom.minidom as MD
 import os
 import mathutils
 import copy
+import json
 from mo import materials, meshes
 
 
-def add_to_element(blender_object, element, dir):
+def to_level_object(blender_object):
+    if not blender_object:
+        return None
 
-    object_field = ET.SubElement(element, blender_object.get('type') or 'mesh') #todo change to object
-    object_field.set("name", blender_object.name)
+    level_object = dict()
+    level_object['type'] = blender_object.get('type') or 'mesh'
+    level_object['name'] = blender_object.name
 
-    location = copy.copy(blender_object.location)
-    location[0] = blender_object.matrix_local[0][3]
-    location[1] = blender_object.matrix_local[1][3]
-    location[2] = blender_object.matrix_local[2][3]
+    location = blender_object.location
+    print (blender_object.rotation_mode)
+    blender_object.rotation_mode ='AXIS_ANGLE'
+    axis_angle = blender_object.rotation_axis_angle
+    level_object['axis'] = [axis_angle[1], axis_angle[2], axis_angle[3]]
+    level_object['angle'] = axis_angle[0]
+    level_object['euler'] = [blender_object.rotation_euler[0], blender_object.rotation_euler[1], blender_object.rotation_euler[2]]
+    blender_object.rotation_mode = 'XYZ'
 
-    object_field.set("x", str(location[0]))
-    object_field.set("y", str(location[1]))
-    object_field.set("z", str(location[2]))
-    object_field.set("mesh", str(blender_object.get("mesh")))
+    level_object['position'] = [location[0], location[1], location[2]]
+    if blender_object.type == "MESH":
+        level_object['mesh'] = str(blender_object.name + '.mesh')
+
     if blender_object.active_material:
-        object_field.set("material", str(blender_object.active_material.name + ".material"))
-    if blender_object.get("level"):
-        object_field.set("level", str(blender_object.get("level")))
+        level_object['material'] = str(blender_object.active_material.name + '.material')
+    #else :
+        #level_object['material'] = 'wall.material'
 
-    if "texture" in blender_object:
-        object_field.set("texture", blender_object.get("texture"))
-    if "lightmap" in blender_object:
-        object_field.set("lightmap", blender_object.get("lightmap"))
-    #else:
-        #TODO: Load from level property!
-        #object_field.set("lightmap", "lightmap.png")
+    if blender_object.get("selectable") is not None:
+        level_object["selectable"] = bool(blender_object.get("selectable"))
+
+    if blender_object.get("texture") is not None:
+        level_object['texture'] = blender_object.get('texture')
+
+    if blender_object.get("lightmap") is not None:
+        level_object['lightmap'] = blender_object.get('lightmap')
+
+    if level_object["type"] in {"soundsource", "streamsource", "train"}:
+        level_object["file"] = blender_object.get("file")
+        level_object["gain"] = float(blender_object.get("gain"))
+        level_object["pitch"] = float(blender_object.get("pitch") or 1.0)
 
 
-    return object_field
+    return level_object
+
+def to_level_objects(blender_objects):
+    root = []
+    for object in blender_objects:
+            level_object = to_level_object(object)
+            level_object['children'] = to_level_objects(object.children)
+            root.append(level_object)
+    return root
 
 def add_popup(blender_object, element):
     object_field = ET.SubElement(element, "popup")
@@ -57,31 +77,21 @@ def add_popup(blender_object, element):
 
 
 class ExportMyFormat(bpy.types.Operator, ExportHelper):
-    bl_idname = "export_rom_level.rlf"
+    bl_idname = "export_rom_level.json"
     bl_label = "Room level format"
     bl_options = {'PRESET'}
-    filename_ext = ".rlf"
+    filename_ext = ".json"
 
-    #Todo: Export textures along with obj files.
     def execute(self, context):
-        graphics_objects = [o for o in bpy.data.objects if (o.type == 'MESH' or (o.type == 'EMPTY' and o.children)) and not o.parent]
+        blender_objects = [o for o in bpy.data.objects if (o.type == 'MESH' or (o.type == 'EMPTY' and o.children)) or o.get("type") == "streamsource" and not o.parent]
 
-        root = ET.Element("level")
-        root.set("lightmap", str(context.scene.get("lightmap")))
-        dir = os.path.dirname(self.filepath)
+        root = to_level_objects(blender_objects)
 
-        for go in graphics_objects:
-            field = add_to_element(go, root, dir)
-            for po in go.children:
-                field2 = add_to_element(po, field, dir)
-                for poo in po.children:
-                    add_to_element(poo, field2, dir)
-
-        xml = MD.parseString(ET.tostring(root))
-
-        file = open(self.filepath, "w")
-        file.write(xml.toprettyxml())
+        file = open(self.filepath, 'w')
+        file.write(json.dumps(root))
         file.close()
+
+        dir = os.path.dirname(self.filepath)
 
         print("Writing materials")
         materials.write(dir)
@@ -92,7 +102,7 @@ class ExportMyFormat(bpy.types.Operator, ExportHelper):
 
 
 def menu_func(self, context):
-    self.layout.operator(ExportMyFormat.bl_idname, text="Room level format(.rlf)")
+    self.layout.operator(ExportMyFormat.bl_idname, text="Room level format(.json)")
 
 
 def register():

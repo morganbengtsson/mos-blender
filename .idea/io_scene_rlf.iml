@@ -7,8 +7,8 @@
     <content url="file://$USER_HOME$/Desktop/blender-2.69-linux-glibc211-x86_64/2.69/scripts/modules">
       <sourceFolder url="file://$USER_HOME$/Desktop/blender-2.69-linux-glibc211-x86_64/2.69/scripts/modules" isTestSource="false" />
     </content>
-    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="mo" />
+    <orderEntry type="module" module-name="Micro-reader" />
   </component>
 </module>

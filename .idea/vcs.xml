@@ -3,5 +3,6 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../../modules/mo" vcs="Git" />
+    <mapping directory="$USER_HOME$/Desktop/Micro-reader" vcs="Git" />
   </component>
 </project>
