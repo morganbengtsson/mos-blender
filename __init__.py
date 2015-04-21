@@ -52,9 +52,11 @@ def to_level_object(blender_object):
     if blender_object.get("lightmap") is not None:
         level_object['lightmap'] = blender_object.get('lightmap')
 
-    if level_object["type"] in {"soundsource", "streamsource", "train"}:
+    if level_object["type"] in {"soundsource", "streamsource", "train", "person"}:
+        level_object["stream"] = blender_object.get("stream")
+        level_object["sound"] = blender_object.get("sound")
         level_object["file"] = blender_object.get("file")
-        level_object["gain"] = float(blender_object.get("gain"))
+        level_object["gain"] = float(blender_object.get("gain") or 1.0)
         level_object["pitch"] = float(blender_object.get("pitch") or 1.0)
 
 
