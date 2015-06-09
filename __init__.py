@@ -26,15 +26,32 @@ def to_level_object(blender_object):
     level_object['name'] = blender_object.name
 
     location = blender_object.location
+    location = [location[0], location[1], location[2]]
+
+    print (blender_object.name)
+    print (blender_object.location)
+    if (blender_object.parent):
+        print ("has parent:")
+        #print (blender_object.parent.location + blender_object.location)
+        #m = blender_object.parent.matrix_world * blender_object.matrix_parent_inverse * blender_object.matrix_local
+        m = blender_object.parent.matrix_world * blender_object.matrix_local
+        print(blender_object.parent.matrix_world)
+        print(blender_object.matrix_parent_inverse)
+        print(blender_object.matrix_local)
+        print(m)
+        location = [m[0][3], m[1][3], m[2][3]]
+        print (location)
     print (blender_object.rotation_mode)
     blender_object.rotation_mode ='AXIS_ANGLE'
     axis_angle = blender_object.rotation_axis_angle
     level_object['axis'] = [axis_angle[1], axis_angle[2], axis_angle[3]]
     level_object['angle'] = axis_angle[0]
-    level_object['euler'] = [blender_object.rotation_euler[0], blender_object.rotation_euler[1], blender_object.rotation_euler[2]]
+    euler = blender_object.rotation_euler
+    level_object['euler'] = [euler[0], euler[1], euler[2]]
     blender_object.rotation_mode = 'XYZ'
 
     level_object['position'] = [location[0], location[1], location[2]]
+
     if blender_object.type == "MESH":
         level_object['mesh'] = str(blender_object.name + '.mesh')
 
@@ -52,7 +69,12 @@ def to_level_object(blender_object):
     if blender_object.get("lightmap") is not None:
         level_object['lightmap'] = blender_object.get('lightmap')
 
-    if level_object["type"] in {"soundsource", "streamsource", "train", "person"}:
+    if level_object["type"] in {"radio"}:
+        level_object["channel1"] = blender_object.get('channel1')
+        level_object["channel2"] = blender_object.get('channel2')
+        level_object["channel3"] = blender_object.get('channel3')
+
+    if level_object["type"] in {"soundsource", "streamsource", "train", "person", "doorkeypad", "keypad"}:
         level_object["stream"] = blender_object.get("stream")
         level_object["sound"] = blender_object.get("sound")
         level_object["file"] = blender_object.get("file")
@@ -85,7 +107,9 @@ class ExportMyFormat(bpy.types.Operator, ExportHelper):
     filename_ext = ".json"
 
     def execute(self, context):
-        blender_objects = [o for o in bpy.data.objects if (o.type == 'MESH' or (o.type == 'EMPTY' and o.children)) or o.get("type") == "streamsource" and not o.parent]
+        #blender_objects = [o for o in bpy.data.objects if (o.type == 'MESH' or (o.type == 'EMPTY' and o.children)) or o.get("type") == "streamsource" and not o.parent]
+        #blender_objects = [o for o in blender_objects if not o.parent]
+        blender_objects = [o for o in bpy.data.objects if not o.parent and ((o.type == 'MESH' or (o.type == 'EMPTY' and o.children)) or o.get("type") == "streamsource")]
 
         root = to_level_objects(blender_objects)
 
