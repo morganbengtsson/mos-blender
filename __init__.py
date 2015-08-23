@@ -14,7 +14,7 @@ import os
 import mathutils
 import copy
 import json
-from mo import materials, meshes
+from mo import materials, meshes, models
 
 
 def to_level_object(blender_object):
@@ -25,23 +25,17 @@ def to_level_object(blender_object):
     level_object['type'] = blender_object.get('type') or 'mesh'
     level_object['name'] = blender_object.name
 
-    location = blender_object.location
-    location = [location[0], location[1], location[2]]
+    level_object["model"] = blender_object.name + ".model"
 
-    print (blender_object.name)
-    print (blender_object.location)
-    if (blender_object.parent):
-        print ("has parent:")
+    m = blender_object.matrix_local
+    location = [m[0][3], m[1][3], m[2][3]]
+
+    if blender_object.parent:
         #print (blender_object.parent.location + blender_object.location)
         #m = blender_object.parent.matrix_world * blender_object.matrix_parent_inverse * blender_object.matrix_local
         m = blender_object.parent.matrix_world * blender_object.matrix_local
-        print(blender_object.parent.matrix_world)
-        print(blender_object.matrix_parent_inverse)
-        print(blender_object.matrix_local)
-        print(m)
         location = [m[0][3], m[1][3], m[2][3]]
-        print (location)
-    print (blender_object.rotation_mode)
+
     blender_object.rotation_mode ='AXIS_ANGLE'
     axis_angle = blender_object.rotation_axis_angle
     level_object['axis'] = [axis_angle[1], axis_angle[2], axis_angle[3]]
@@ -51,6 +45,7 @@ def to_level_object(blender_object):
     blender_object.rotation_mode = 'XYZ'
 
     level_object['position'] = [location[0], location[1], location[2]]
+    level_object['obstruction'] = blender_object.get('obstruction') or 0.0
 
     if blender_object.type == "MESH":
         level_object['mesh'] = str(blender_object.name + '.mesh')
@@ -60,6 +55,9 @@ def to_level_object(blender_object):
     #else :
         #level_object['material'] = 'wall.material'
 
+    if blender_object.get("step") is not None:
+        level_object["step"] = bool(blender_object.get("step"))
+
     if blender_object.get("selectable") is not None:
         level_object["selectable"] = bool(blender_object.get("selectable"))
 
@@ -68,6 +66,9 @@ def to_level_object(blender_object):
 
     if blender_object.get("lightmap") is not None:
         level_object['lightmap'] = blender_object.get('lightmap')
+
+    if blender_object.get("texture2") is not None:
+        level_object["texture2"] = blender_object.get("texture2")
 
     if level_object["type"] in {"radio"}:
         level_object["channel1"] = blender_object.get('channel1')
@@ -80,7 +81,6 @@ def to_level_object(blender_object):
         level_object["file"] = blender_object.get("file")
         level_object["gain"] = float(blender_object.get("gain") or 1.0)
         level_object["pitch"] = float(blender_object.get("pitch") or 1.0)
-
 
     return level_object
 
@@ -119,10 +119,12 @@ class ExportMyFormat(bpy.types.Operator, ExportHelper):
 
         dir = os.path.dirname(self.filepath)
 
+        print("Writing models")
+        models.write(dir, [o for o in bpy.data.objects if o.type == "MESH"])
         print("Writing materials")
         materials.write(dir)
         print("Writing meshes")
-        meshes.write(dir)
+        meshes.write(dir, [o for o in bpy.data.objects if o.type == "MESH"])
 
         return {'FINISHED'}
 
