@@ -30,11 +30,11 @@ def to_level_object(blender_object):
     m = blender_object.matrix_local
     location = [m[0][3], m[1][3], m[2][3]]
 
-    if blender_object.parent:
+    #if blender_object.parent:
         #print (blender_object.parent.location + blender_object.location)
         #m = blender_object.parent.matrix_world * blender_object.matrix_parent_inverse * blender_object.matrix_local
-        m = blender_object.parent.matrix_world * blender_object.matrix_local
-        location = [m[0][3], m[1][3], m[2][3]]
+    #    m = blender_object.parent.matrix_world * blender_object.matrix_local
+    #    location = [m[0][3], m[1][3], m[2][3]]
 
     blender_object.rotation_mode ='AXIS_ANGLE'
     axis_angle = blender_object.rotation_axis_angle
