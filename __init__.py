@@ -25,7 +25,7 @@ def to_level_object(blender_object):
     level_object['type'] = blender_object.get('type') or 'mesh'
     level_object['name'] = blender_object.name
 
-    level_object["model"] = blender_object.name + ".model"
+
 
     m = blender_object.matrix_local
     location = [m[0][3], m[1][3], m[2][3]]
@@ -49,6 +49,7 @@ def to_level_object(blender_object):
 
     if blender_object.type == "MESH":
         level_object['mesh'] = str(blender_object.name + '.mesh')
+        level_object["model"] = blender_object.name + ".model"
 
     if blender_object.active_material:
         level_object['material'] = str(blender_object.active_material.name + '.material')
@@ -82,6 +83,8 @@ def to_level_object(blender_object):
         level_object["gain"] = float(blender_object.get("gain") or 1.0)
         level_object["pitch"] = float(blender_object.get("pitch") or 1.0)
 
+    level_object["id"] = blender_object.as_pointer()
+
     return level_object
 
 def to_level_objects(blender_objects):
@@ -107,9 +110,7 @@ class ExportMyFormat(bpy.types.Operator, ExportHelper):
     filename_ext = ".json"
 
     def execute(self, context):
-        #blender_objects = [o for o in bpy.data.objects if (o.type == 'MESH' or (o.type == 'EMPTY' and o.children)) or o.get("type") == "streamsource" and not o.parent]
-        #blender_objects = [o for o in blender_objects if not o.parent]
-        blender_objects = [o for o in bpy.data.objects if not o.parent and ((o.type == 'MESH' or (o.type == 'EMPTY' and o.children)) or o.get("type") == "streamsource")]
+        blender_objects = [o for o in context.scene.objects if not o.parent and ((o.type == 'MESH' or (o.type == 'EMPTY' and o.children)) or o.get("type") == "streamsource")]
 
         root = to_level_objects(blender_objects)
 
@@ -119,12 +120,14 @@ class ExportMyFormat(bpy.types.Operator, ExportHelper):
 
         dir = os.path.dirname(self.filepath)
 
+        objects = context.scene.objects
+
         print("Writing models")
-        models.write(dir, [o for o in bpy.data.objects if o.type == "MESH"])
+        models.write(dir, [o for o in objects if o.type == "MESH"])
         print("Writing materials")
         materials.write(dir)
         print("Writing meshes")
-        meshes.write(dir, [o for o in bpy.data.objects if o.type == "MESH"])
+        meshes.write(dir, [o for o in objects if o.type == "MESH"])
 
         return {'FINISHED'}
 
