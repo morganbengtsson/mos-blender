@@ -10,7 +10,7 @@ bl_info = {
     "blender":      (2, 7, 1),
     "version":      (0, 0, 1),
     "location":     "File > Import-Export",
-    "description":  "Export Isometric level",
+    "description":  "Export general level",
     "category":     "Import-Export"
 }
 
@@ -24,11 +24,13 @@ def to_entity(dir, blender_object):
 
     entity = dict()
 
-    if hasattr(blender_object, "_RNA_UI"):
-        iter_obj = iter(blender_object.keys())
-        next(iter_obj)
-        for key in iter_obj:
+    #if hasattr(blender_object.keys(), "_RNA_UI"):
+    keys = blender_object.keys()
+    for key in keys:
+        print(key)
+        if not key.startswith("_") and not key.startswith("cycles"):
             entity[key] = blender_object[key]
+
 
     entity['type'] = blender_object.get("entity_type") or "entity"
     entity['name'] = blender_object.name
@@ -97,7 +99,7 @@ class ExportMyFormat(bpy.types.Operator, ExportHelper):
 
 
 def menu_func(self, context):
-    self.layout.operator(ExportMyFormat.bl_idname, text="Isometric level format(.json)")
+    self.layout.operator(ExportMyFormat.bl_idname, text="General level format(.json)")
 
 
 def register():
