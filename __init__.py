@@ -17,7 +17,8 @@ bl_info = {
 
 def to_entity(directory, blender_object):
     entity_type = blender_object.get("entity_type")
-    print("type: " + str(entity_type))
+    print("type: ", end=" ")
+    print(entity_type)
 
     if not blender_object or blender_object.type not in {"MESH", "EMPTY"}:
         return None
@@ -26,7 +27,6 @@ def to_entity(directory, blender_object):
 
     keys = blender_object.keys()
     for key in keys:
-        print(key)
         if not key.startswith("_") and not key.startswith("cycles"):
             entity[key] = blender_object[key]
 
@@ -44,7 +44,8 @@ def to_entity(directory, blender_object):
     entity["transform"] = transform
 
     print("Writing models.")
-    models.write(directory, [blender_object], True if entity_type else False)
+    print(True if entity_type is None else False)
+    models.write(directory, [blender_object], True if entity_type is None else False)
 
     entity["model"] = blender_object.name + ".model"
     entity["id"] = blender_object.as_pointer()
