@@ -15,24 +15,22 @@ bl_info = {
 }
 
 
-def to_entity(dir, blender_object):
-    type = blender_object.get("entity_type")
-    print("type: " + str(type))
-    #if not blender_object or blender_object.get("type") not in {"entity", "section", "battery", "weather_station", "battery_placement"}:
+def to_entity(directory, blender_object):
+    entity_type = blender_object.get("entity_type")
+    print("type: " + str(entity_type))
+
     if not blender_object or blender_object.type not in {"MESH", "EMPTY"}:
         return None
 
     entity = dict()
 
-    #if hasattr(blender_object.keys(), "_RNA_UI"):
     keys = blender_object.keys()
     for key in keys:
         print(key)
         if not key.startswith("_") and not key.startswith("cycles"):
             entity[key] = blender_object[key]
 
-
-    entity['type'] = blender_object.get("entity_type") or "entity"
+    entity['type'] = entity_type
     entity['name'] = blender_object.name
 
     m = blender_object.matrix_local
@@ -45,41 +43,37 @@ def to_entity(dir, blender_object):
         transform.extend(list(row))
     entity["transform"] = transform
 
-    if type == "section":
-        models.write(dir, [blender_object], False)
-    else:
-        models.write(dir, [blender_object])
+    print("Writing models.")
+    models.write(directory, [blender_object], True if entity_type else False)
 
-    #if blender_object.type == "MESH":
     entity["model"] = blender_object.name + ".model"
-
     entity["id"] = blender_object.as_pointer()
 
     return entity
 
 
-def to_entities(dir, blender_objects):
+def to_entities(directory, blender_objects):
     root = []
-    for object in blender_objects:
-        level_object = to_entity(dir, object)
+    for blender_object in blender_objects:
+        level_object = to_entity(directory, blender_object)
         if level_object:
-            level_object['children'] = to_entities(dir, object.children)
+            level_object['children'] = to_entities(directory, blender_object.children)
             root.append(level_object)
     return root
 
 
 class ExportMyFormat(bpy.types.Operator, ExportHelper):
     bl_idname = "export_rom_level.json"
-    bl_label = "Room level format"
+    bl_label = "General level format"
     bl_options = {'PRESET'}
     filename_ext = ".json"
 
     def execute(self, context):
         blender_objects = [o for o in context.scene.objects if not o.parent and o.type in {"MESH", "EMPTY"}]
 
-        dir = os.path.dirname(self.filepath)
+        directory = os.path.dirname(self.filepath)
 
-        root = to_entities(dir, blender_objects)
+        root = to_entities(directory, blender_objects)
 
         print("Writing entities.")
         file = open(self.filepath, 'w')
@@ -88,12 +82,10 @@ class ExportMyFormat(bpy.types.Operator, ExportHelper):
 
         objects = context.scene.objects
 
-        print("Writing models")
-        #models.write(dir, [o for o in objects if o.type in {"MESH", "EMPTY"}])
-        print("Writing materials")
-        materials.write(dir)
-        print("Writing meshes")
-        meshes.write(dir, [o for o in objects if o.type == "MESH"])
+        print("Writing materials.")
+        materials.write(directory)
+        print("Writing meshes.")
+        meshes.write(directory, [o for o in objects if o.type == "MESH"])
 
         return {'FINISHED'}
 
