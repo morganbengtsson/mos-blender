@@ -7,8 +7,8 @@ from mo import materials, meshes, models
 bl_info = {
     "name":         "General level format",
     "author":       "Morgan Bengtsson",
-    "blender":      (2, 7, 1),
-    "version":      (0, 0, 1),
+    "blender":      (2, 7, 7),
+    "version":      (0, 0, 2),
     "location":     "File > Import-Export",
     "description":  "Export general level",
     "category":     "Import-Export"
@@ -44,8 +44,9 @@ def to_entity(directory, blender_object):
     entity["transform"] = transform
 
     print("Writing models.")
-    print(True if entity_type is None else False)
-    models.write(directory, [blender_object], True if entity_type is None else False)
+    export_children = bool(blender_object.get("export_children"))
+    print("children: " + str(export_children))
+    models.write(directory, [blender_object], True if entity_type is None else export_children)
 
     entity["model"] = blender_object.name + ".model"
     entity["id"] = blender_object.as_pointer()
@@ -64,7 +65,7 @@ def to_entities(directory, blender_objects):
 
 
 class ExportMyFormat(bpy.types.Operator, ExportHelper):
-    bl_idname = "export_rom_level.json"
+    bl_idname = "export_level"
     bl_label = "General level format"
     bl_options = {'PRESET'}
     filename_ext = ".json"
