@@ -22,6 +22,8 @@ def to_entity(directory, blender_object):
 
     if not blender_object or blender_object.type not in {"MESH", "EMPTY"}:
         return None
+    if entity_type == "none":
+        return None
 
     entity = dict()
 
@@ -65,7 +67,7 @@ def to_entities(directory, blender_objects):
 
 
 class ExportMyFormat(bpy.types.Operator, ExportHelper):
-    bl_idname = "export_level"
+    bl_idname = "export_scene.json"
     bl_label = "General level format"
     bl_options = {'PRESET'}
     filename_ext = ".json"
