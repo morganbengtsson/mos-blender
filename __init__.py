@@ -14,13 +14,12 @@ bl_info = {
     "category":     "Import-Export"
 }
 
-
 def to_entity(directory, blender_object):
     entity_type = blender_object.get("entity_type")
     print("type: ", end=" ")
     print(entity_type)
 
-    if not blender_object or blender_object.type not in {"MESH", "EMPTY"}:
+    if not blender_object or blender_object.type not in {"MESH", "EMPTY", "CAMERA"}:
         return None
     if entity_type == "none":
         return None
@@ -50,7 +49,8 @@ def to_entity(directory, blender_object):
     print("children: " + str(export_children))
     models.write(directory, [blender_object], True if entity_type is None else export_children)
 
-    entity["model"] = blender_object.name + ".model"
+    if blender_object.type == "MESH":
+        entity["model"] = blender_object.name + ".model"
     entity["id"] = blender_object.as_pointer()
 
     return entity
@@ -73,7 +73,7 @@ class ExportMyFormat(bpy.types.Operator, ExportHelper):
     filename_ext = ".json"
 
     def execute(self, context):
-        blender_objects = [o for o in context.scene.objects if not o.parent and o.type in {"MESH", "EMPTY"}]
+        blender_objects = [o for o in context.scene.objects if not o.parent and o.type in {"MESH", "EMPTY", "CAMERA"}]
 
         directory = os.path.dirname(self.filepath)
 
