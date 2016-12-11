@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="PYTHON_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
+    </content>
+    <content url="file://$USER_HOME$/Desktop/blender-2.69-linux-glibc211-x86_64/2.69/scripts/modules">
+      <sourceFolder url="file://$USER_HOME$/Desktop/blender-2.69-linux-glibc211-x86_64/2.69/scripts/modules" isTestSource="false" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="mos" />
+    <orderEntry type="module" module-name="Micro-reader" />
+  </component>
+</module>
