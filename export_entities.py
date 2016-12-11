@@ -24,18 +24,8 @@ class ExportMyFormat(bpy.types.Operator, ExportHelper):
 
     def execute(self, context):
         blender_objects = [o for o in context.scene.objects if not o.parent and o.type in {"MESH", "EMPTY"}]
-
         directory = os.path.dirname(self.filepath)
-
-        print("Writing entities.")
         entities.write(directory, blender_objects)
-        print("Writing models.")
-        models.write(directory, blender_objects)
-        print("Writing materials.")
-        materials.write(directory)
-        print("Writing meshes.")
-        meshes.write(directory, [o for o in context.scene.objects if o.type == "MESH"])
-
         return {'FINISHED'}
 
 
