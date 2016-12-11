@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/../../addons/io_scene_level/.idea/io_scene_rlf.iml" filepath="$PROJECT_DIR$/../../addons/io_scene_level/.idea/io_scene_rlf.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/mo.iml" filepath="$PROJECT_DIR$/.idea/mo.iml" />
-    </modules>
-  </component>
-</project>
