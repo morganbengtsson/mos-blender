@@ -1,1 +1,1 @@
-Install by placing or cloning into the Blender "addons" directory.
+Install by placing or cloning into one of Blenders *scripts/addons* directories.
