@@ -1,0 +1,1 @@
+Install by placing or cloning into the Blender "addons" directory.
