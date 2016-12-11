@@ -16,16 +16,17 @@ import copy
 import json
 from .mos import materials, meshes, models
 
-
+"""
 def add_popup(blender_object, element):
     object_field = ET.SubElement(element, "popup")
     print(str(blender_object.get("init_time")))
     print(str(blender_object.get("text")))
     object_field.set("init_time", str(blender_object.get("init_time")))
     object_field.set("text", str(blender_object.get("text")))
+"""
 
 
-class ExportMyFormat(bpy.types.Operator, ExportHelper):
+class ExportModelsFormat(bpy.types.Operator, ExportHelper):
     bl_idname = "export_models.model"
     bl_label = "Model format"
     bl_options = {'PRESET'}
@@ -46,18 +47,18 @@ class ExportMyFormat(bpy.types.Operator, ExportHelper):
         return {'FINISHED'}
 
 
-def menu_func(self, context):
-    self.layout.operator(ExportMyFormat.bl_idname, text="Model format(.model)")
+def export_models_menu_func(self, context):
+    self.layout.operator(ExportModelsFormat.bl_idname, text="Model format(.model)")
 
 
 def register():
     bpy.utils.register_module(__name__)
-    bpy.types.INFO_MT_file_export.append(menu_func)
+    bpy.types.INFO_MT_file_export.append(export_models_menu_func)
 
 
 def unregister():
     bpy.utils.unregister_module(__name__)
-    bpy.types.INFO_MT_file_export.remove(menu_func)
+    bpy.types.INFO_MT_file_export.remove(export_models_menu_func)
 
 if __name__ == "__main__":
     register()

@@ -16,7 +16,7 @@ from bpy_extras.io_utils import ExportHelper
 import bmesh
 from .mos import materials
 
-class ExportMyFormat(bpy.types.Operator, ExportHelper):
+class ExportMaterialsFormat(bpy.types.Operator, ExportHelper):
     bl_idname = "export_mesh.material"
     bl_label = "Mo material format"
     bl_options = {'PRESET'}
@@ -27,18 +27,18 @@ class ExportMyFormat(bpy.types.Operator, ExportHelper):
         return {'FINISHED'}
 
 
-def menu_func(self, context):
-    self.layout.operator(ExportMyFormat.bl_idname, text="Mo material format (.material)")
+def export_materials_menu_func(self, context):
+    self.layout.operator(ExportMaterialsFormat.bl_idname, text="Mo material format (.material)")
 
 
 def register():
     bpy.utils.register_module(__name__)
-    bpy.types.INFO_MT_file_export.append(menu_func)
+    bpy.types.INFO_MT_file_export.append(export_materials_menu_func)
 
 
 def unregister():
     bpy.utils.unregister_module(__name__)
-    bpy.types.INFO_MT_file_export.remove(menu_func)
+    bpy.types.INFO_MT_file_export.remove(export_materials_menu_func)
 
 if __name__ == "__main__":
     register()

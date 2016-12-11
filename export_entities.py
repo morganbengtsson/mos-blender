@@ -16,7 +16,8 @@ bl_info = {
 }
 """
 
-class ExportMyFormat(bpy.types.Operator, ExportHelper):
+
+class ExportEntitiesFormat(bpy.types.Operator, ExportHelper):
     bl_idname = "export_entities.entity"
     bl_label = "Entities"
     bl_options = {'PRESET'}
@@ -29,18 +30,18 @@ class ExportMyFormat(bpy.types.Operator, ExportHelper):
         return {'FINISHED'}
 
 
-def menu_func(self, context):
-    self.layout.operator(ExportMyFormat.bl_idname, text="Entity format (.entity)")
+def export_entities_level_func(self, context):
+    self.layout.operator(ExportEntitiesFormat.bl_idname, text="Entity format (.entity)")
 
 
 def register():
     bpy.utils.register_module(__name__)
-    bpy.types.INFO_MT_file_export.append(menu_func)
+    bpy.types.INFO_MT_file_export.append(export_entities_level_func)
 
 
 def unregister():
     bpy.utils.unregister_module(__name__)
-    bpy.types.INFO_MT_file_export.remove(menu_func)
+    bpy.types.INFO_MT_file_export.remove(export_entities_level_func)
 
 if __name__ == "__main__":
     register()
