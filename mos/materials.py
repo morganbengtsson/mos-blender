@@ -1,32 +1,26 @@
 import bpy
-import bmesh
 import struct
 
+
 def write(dir):
-    materials = bpy.data.materials
+    blender_materials = bpy.data.materials
 
-    for material in materials:
+    for blender_material in blender_materials:
+        material_file = open(dir + '/' + blender_material.name + '.material', 'bw')
 
-        file = open(dir + '/' + material.name + '.material', 'bw')
+        print('Exporting: ' + blender_material.name)
 
-        print('Exporting: ' + material.name)
-        #ambient = tuple([material.ambient * c for c in material.diffuse_color])
+        material = {"ambient": blender_material.diffuse_color * blender_material.ambient,
+                    "diffuse": blender_material.diffuse_color,
+                    "specular": blender_material.specular_color,
+                    "opacity": blender_material.alpha,
+                    "specular_exponent": float(blender_material.specular_hardness)}
 
-        ambient = material.diffuse_color * material.ambient
-        #print(ambient)
-        diffuse = material.diffuse_color
-        #print(diffuse)
-        specular = material.specular_color
-        #print(specular)
-        opacity = material.alpha
-        #print(opacity)
-        specular_exponent = float(material.specular_hardness)
+        material_file.write(struct.pack('fff', *material["ambient"]))
+        material_file.write(struct.pack('fff', *material["diffuse"]))
+        material_file.write(struct.pack('fff', *material["specular"]))
+        material_file.write(struct.pack('f', material["opacity"]))
+        material_file.write(struct.pack('f', material["specular_exponent"]))
 
-        file.write(struct.pack('fff', *ambient))
-        file.write(struct.pack('fff', *diffuse))
-        file.write(struct.pack('fff', *specular))
-        file.write(struct.pack('f', opacity))
-        file.write(struct.pack('f', specular_exponent))
-
-        file.close()
-        print("Wrote file: " + file.name)
+        material_file.close()
+        print("Wrote file: " + material_file.name)
