@@ -17,7 +17,7 @@ bl_info = {
 
 class ExportLevelFormat(bpy.types.Operator, ExportHelper):
     bl_idname = "export_scene.json"
-    bl_label = "MOS general level format (.json)"
+    bl_label = "Export MOS level format"
     bl_options = {'PRESET'}
     filename_ext = ".json"
 
@@ -28,7 +28,7 @@ class ExportLevelFormat(bpy.types.Operator, ExportHelper):
 
 class ExportMaterialsFormat(bpy.types.Operator, ExportHelper):
     bl_idname = "export_mesh.material"
-    bl_label = "MOS material format (.material)"
+    bl_label = "Export MOS material format)"
     bl_options = {'PRESET'}
     filename_ext = ".material"
 
@@ -39,7 +39,7 @@ class ExportMaterialsFormat(bpy.types.Operator, ExportHelper):
 
 class ExportMeshesFormat(bpy.types.Operator, ExportHelper):
     bl_idname = "export_mesh.mesh"
-    bl_label = "MOS mesh format (.mesh)"
+    bl_label = "Export MOS mesh format"
     bl_options = {'PRESET'}
     filename_ext = ".mesh"
 
@@ -50,7 +50,7 @@ class ExportMeshesFormat(bpy.types.Operator, ExportHelper):
 
 class ExportEntitiesFormat(bpy.types.Operator, ExportHelper):
     bl_idname = "export_entities.entity"
-    bl_label = "MOS entity format (.entity)"
+    bl_label = "Export MOS entity format"
     bl_options = {'PRESET'}
     filename_ext = ".entity"
 
@@ -63,7 +63,7 @@ class ExportEntitiesFormat(bpy.types.Operator, ExportHelper):
 
 class ExportModelsFormat(bpy.types.Operator, ExportHelper):
     bl_idname = "export_models.model"
-    bl_label = "MOS model format (.model)"
+    bl_label = "Export MOS model format"
     bl_options = {'PRESET'}
     filename_ext = ".model"
 
@@ -76,23 +76,23 @@ class ExportModelsFormat(bpy.types.Operator, ExportHelper):
 
 
 def export_level_menu_func(self, context):
-    self.layout.operator(ExportLevelFormat.bl_idname, text=ExportLevelFormat.bl_label)
+    self.layout.operator(ExportLevelFormat.bl_idname, text=ExportLevelFormat.bl_label[7:] + " (%s)" % ExportLevelFormat.filename_ext)
 
 
 def export_materials_menu_func(self, context):
-    self.layout.operator(ExportMaterialsFormat.bl_idname, text=ExportMaterialsFormat.bl_label)
+    self.layout.operator(ExportMaterialsFormat.bl_idname, text=ExportMaterialsFormat.bl_label[7:] + " (%s)" % ExportMaterialsFormat.filename_ext)
 
 
 def export_meshes_menu_func(self, context):
-    self.layout.operator(ExportMeshesFormat.bl_idname, text=ExportMeshesFormat.bl_label)
+    self.layout.operator(ExportMeshesFormat.bl_idname, text=ExportMeshesFormat.bl_label[7:] + " (%s)" % ExportMeshesFormat.filename_ext)
 
 
 def export_models_menu_func(self, context):
-    self.layout.operator(ExportModelsFormat.bl_idname, text=ExportModelsFormat.bl_label)
+    self.layout.operator(ExportModelsFormat.bl_idname, text=ExportModelsFormat.bl_label[7:] + " (%s)" % ExportModelsFormat.filename_ext)
 
 
 def export_entities_level_func(self, context):
-    self.layout.operator(ExportEntitiesFormat.bl_idname, text=ExportEntitiesFormat.bl_label)
+    self.layout.operator(ExportEntitiesFormat.bl_idname, text=ExportEntitiesFormat.bl_label[7:] + " (%s)" % ExportEntitiesFormat.filename_ext)
 
 
 
