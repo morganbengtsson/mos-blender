@@ -58,15 +58,6 @@ def to_model(blender_object, force):
     if blender_object.active_material:
         model['material'] = str(blender_object.active_material.name + ".material")
 
-    if blender_object.get("texture") is not None:
-        model["texture"] = blender_object.get("texture")
-
-    if blender_object.get("normalmap") is not None:
-        model["normalmap"] = blender_object.get("normalmap")
-
-    if blender_object.get("specularmap") is not None:
-        model["specularmap"] = blender_object.get("specularmap")
-
     if blender_object.get("lit") is not None:
         model["lit"] = bool(blender_object.get("lit"))
 

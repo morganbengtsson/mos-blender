@@ -45,6 +45,7 @@ def write_mesh_file(blender_object, write_dir):
         indices = []
         positions = []
         normals = []
+        tangents = []
         texture_uvs = []
         lightmap_uvs = []
 
@@ -61,6 +62,7 @@ def write_mesh_file(blender_object, write_dir):
                     vert = loop.vert
                     positions.append(vert.co.to_tuple())
                     normals.append(vert.normal.to_tuple())
+                    tangents.append(loop.calc_tangent().to_tuple())
                     texture_uvs.append(texture_uv.to_tuple())
                     lightmap_uvs.append(lightmap_uv.to_tuple())
         else:
@@ -75,11 +77,12 @@ def write_mesh_file(blender_object, write_dir):
         mesh_file.write(struct.pack('i', len(indices)))
 
         # Body
-        for v in zip(positions, normals, texture_uvs, lightmap_uvs):
+        for v in zip(positions, normals, tangents, texture_uvs, lightmap_uvs):
             mesh_file.write(struct.pack('fff', *v[0]))
             mesh_file.write(struct.pack('fff', *v[1]))
-            mesh_file.write(struct.pack('ff', *v[2]))
+            mesh_file.write(struct.pack('fff', *v[2]))
             mesh_file.write(struct.pack('ff', *v[3]))
+            mesh_file.write(struct.pack('ff', *v[4]))
 
         for i in indices:
             mesh_file.write(struct.pack('I', i))
