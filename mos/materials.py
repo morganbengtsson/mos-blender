@@ -18,6 +18,7 @@ def write(dir):
                     "specular_exponent": float(blender_material.specular_hardness),
                     "diffuse_map": blender_material.get("diffuse_map"),
                     "normal_map" : blender_material.get("normal_map"),
+                    "light_map": blender_material.get("light_map"),
                     "diffuse_environment_map": blender_material.get("diffuse_environment_map"),
                     "specular_environment_map": blender_material.get("specular_environment_map")}
 

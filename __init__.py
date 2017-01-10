@@ -8,7 +8,7 @@ bl_info = {
     "name":         "Mos export",
     "author":       "Morgan Bengtsson",
     "blender":      (2, 7, 7),
-    "version":      (0, 0, 2),
+    "version":      (0, 0, 3),
     "location":     "File > Import-Export",
     "description":  "Export Mos formats",
     "category":     "Import-Export"
@@ -16,10 +16,10 @@ bl_info = {
 
 
 class ExportLevelFormat(bpy.types.Operator, ExportHelper):
-    bl_idname = "export_scene.json"
+    bl_idname = "export_scene.level"
     bl_label = "Export MOS level format"
     bl_options = {'PRESET'}
-    filename_ext = ".json"
+    filename_ext = ".level"
 
     def execute(self, context):
         level.write(os.path.dirname(self.filepath), self.filepath, context.scene.objects)
@@ -28,7 +28,7 @@ class ExportLevelFormat(bpy.types.Operator, ExportHelper):
 
 class ExportMaterialsFormat(bpy.types.Operator, ExportHelper):
     bl_idname = "export_mesh.material"
-    bl_label = "Export MOS material format)"
+    bl_label = "Export MOS material format"
     bl_options = {'PRESET'}
     filename_ext = ".material"
 
@@ -93,11 +93,6 @@ def export_models_menu_func(self, context):
 
 def export_entities_level_func(self, context):
     self.layout.operator(ExportEntitiesFormat.bl_idname, text=ExportEntitiesFormat.bl_label[7:] + " (%s)" % ExportEntitiesFormat.filename_ext)
-
-
-
-
-
 
 def register():
     bpy.utils.register_module(__name__)
