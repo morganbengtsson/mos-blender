@@ -85,7 +85,8 @@ def to_models(blender_objects, force):
     for object in blender_objects:
         model = Model.from_blender_object(object, force)
         if model:
-            model.models.extend(to_models(object.children, force))
+            #model.models.extend(to_models(object.children, force))
+            model.models = model.models + to_models(object.children, force)
             root.append(model)
     return root
 

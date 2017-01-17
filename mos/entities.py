@@ -37,7 +37,7 @@ def to_entity(directory, blender_object):
     #print("children: " + str(export_children))
     #models.write(directory, [blender_object], True if entity_type is None else export_children)
     print("WRITING " + blender_object.name)
-    models.write(directory, [blender_object], True)
+    #models.write(directory, [blender_object], True)
 
     entity["model"] = blender_object.name + ".model"
     entity["id"] = blender_object.as_pointer()

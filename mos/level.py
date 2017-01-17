@@ -37,7 +37,7 @@ def to_entity(directory, blender_object):
     print("Writing models.")
     export_children = bool(blender_object.get("export_children"))
     print("children: " + str(export_children))
-    models.write(directory, [blender_object], True if entity_type is None else export_children)
+    #models.write(directory, [blender_object], True if entity_type is None else export_children)
 
     if blender_object.type == "MESH":
         entity["model"] = blender_object.name + ".model"
@@ -67,6 +67,9 @@ def write(dir, filepath, objects):
     file = open(filepath, 'w')
     file.write(json.dumps(root))
     file.close()
+
+    print("Writing models.")
+    models.write(directory, objects)
 
     print("Writing materials.")
     materials.write(directory)
