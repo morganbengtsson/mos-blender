@@ -44,11 +44,10 @@ def to_model(blender_object, force):
     model = dict()
     model['name'] = blender_object.name
 
-    m = blender_object.matrix_local
-    location = [m[0][3], m[1][3], m[2][3]]
+    transform_matrix = blender_object.matrix_local
 
     transform = list()
-    for row in m.col:
+    for row in transform_matrix.col:
         transform.extend(list(row))
 
     model["transform"] = transform
