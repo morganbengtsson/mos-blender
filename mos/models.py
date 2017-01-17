@@ -1,12 +1,6 @@
 import json
 import bpy
-import bmesh
-import struct
-import mathutils
-import math
-from math import radians
-import copy
-from . import materials, meshes, entities
+from . import materials, meshes
 
 class Model(object):
     def __init__(self, name=None, transform=[1, 0, 0, 0,
@@ -59,15 +53,6 @@ def to_model(blender_object, force):
 
     model["transform"] = transform
 
-    blender_object.rotation_mode = "AXIS_ANGLE"
-    axis_angle = blender_object.rotation_axis_angle
-    model["axis"] = [axis_angle[1], axis_angle[2], axis_angle[3]]
-    model["angle"] = axis_angle[0]
-    euler = blender_object.rotation_euler
-    model["euler"] = [euler[0], euler[1], euler[2]]
-    blender_object.rotation_mode = "XYZ"
-    model['position'] = [location[0], location[1], location[2]]
-
     if blender_object.type == "MESH":
         model["mesh"] = blender_object.data.name
         for modifier in blender_object.modifiers:
@@ -79,14 +64,6 @@ def to_model(blender_object, force):
 
     if blender_object.get("lit") is not None:
         model["lit"] = bool(blender_object.get("lit"))
-
-    try:
-        model["lightmap"] = blender_object.get("lightmap")
-    except AttributeError:
-        model["lightmap"] = None
-    except IndexError as err:
-        err.args += (". Error in object: " + blender_object.name,)
-        raise
 
     return model
 
