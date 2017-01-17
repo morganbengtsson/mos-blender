@@ -8,6 +8,13 @@ class ObjectEncoder(json.JSONEncoder):
         return o.__dict__
 
 
+def mesh_name(blender_object):
+    name = blender_object.data.name
+    for modifier in blender_object.modifiers:
+        name += "_" + modifier.name
+    return name
+
+
 class Model(object):
     def __init__(self, name=None, transform=[1, 0, 0, 0,
                                              0, 1, 0, 0,
@@ -54,10 +61,14 @@ class Model(object):
 
         model.transform = transform
 
+        print(len(blender_object.material_slots))
+        if len(blender_object.material_slots) > 1:
+            model.models = [Model(name=blender_object.name + "_" + str(index),
+                                      mesh=mesh_name(blender_object) + "_" + str(index) + ".mesh",
+                                      material=slot.name + ".material") for index, slot in enumerate(blender_object.material_slots)]
+
         if blender_object.type == "MESH":
-            model.mesh = blender_object.data.name
-            for modifier in blender_object.modifiers:
-                model.mesh += "_" + modifier.name
+            model.mesh = mesh_name(blender_object)
             model.mesh += ".mesh"
 
         if blender_object.active_material:
@@ -74,7 +85,7 @@ def to_models(blender_objects, force):
     for object in blender_objects:
         model = Model.from_blender_object(object, force)
         if model:
-            model.models = to_models(object.children, force)
+            model.models.extend(to_models(object.children, force))
             root.append(model)
     return root
 
