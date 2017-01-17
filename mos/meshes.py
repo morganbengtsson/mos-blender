@@ -34,7 +34,7 @@ def write_mesh_file(blender_object, write_dir):
     if mesh_type != "none":
         for index, slot in enumerate(blender_object.material_slots):
             filename = write_dir + '/' + name + ".mesh"
-            if len(blender_object.material_slots > 1):
+            if len(blender_object.material_slots) > 1:
                 filename = write_dir + '/' + name + "_" + str(index) + ".mesh"
 
             print('Exporting: ' + filename)

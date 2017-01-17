@@ -67,7 +67,7 @@ class Model(object):
                                       mesh=mesh_name(blender_object) + "_" + str(index) + ".mesh",
                                       material=slot.name + ".material") for index, slot in enumerate(blender_object.material_slots)]
 
-        if blender_object.type == "MESH":
+        elif blender_object.type == "MESH":
             model.mesh = mesh_name(blender_object)
             model.mesh += ".mesh"
 
