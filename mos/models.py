@@ -2,20 +2,15 @@ import json
 import bpy
 from . import materials, meshes
 
+
 class Model(object):
     def __init__(self, name=None, transform=[1, 0, 0, 0,
                                              0, 1, 0, 0,
                                              0, 0, 1, 0,
-                                             0, 0, 0, 1], axis = [0, 0, 1], angle = 0,
-                 euler = [0, 0, 0], position = [0, 0, 0], mesh = None,
-                 material = None, lit = True):
+                                             0, 0, 0, 1], mesh=None,
+                 material=None, lit=True):
         self.name = name
         self.transform = transform
-        self.axis = axis
-        self.angle = 0
-        self.angle = angle
-        self.euler = euler
-        self.position = position
         self.mesh = mesh
         self.material = material
         self.lit = lit
