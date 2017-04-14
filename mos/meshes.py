@@ -4,7 +4,7 @@ import struct
 import json
 
 
-def write_mesh_file(blender_object, write_dir):
+def write_mesh_file(blender_object, write_dir, custom_file_name=None):
     try:
         name = blender_object.data.name
         for modifier in blender_object.modifiers:
@@ -33,9 +33,12 @@ def write_mesh_file(blender_object, write_dir):
 
     if mesh_type != "none":
         for index, slot in enumerate(blender_object.material_slots):
-            filename = write_dir + '/' + name + ".mesh"
-            if len(blender_object.material_slots) > 1:
-                filename = write_dir + '/' + name + "_" + str(index) + ".mesh"
+            if custom_file_name:
+                filename = write_dir + '/' + custom_file_name
+            else:
+                filename = write_dir + '/' + name + ".mesh"
+                if len(blender_object.material_slots) > 1:
+                    filename = write_dir + '/' + name + "_" + str(index) + ".mesh"
 
             print('Exporting: ' + filename)
             print(mesh_type)
@@ -109,10 +112,11 @@ def write(write_dir, objects):
                 animation["frame_rate"] = scene.render.fps
                 animation["keyframes"] = list()
                 armature.animation_data.action = action
-                for index in range(scene.frame_start, scene.frame_end + 1, 5):
+                for index in range(scene.frame_start, scene.frame_end + 1, 2):
                     scene.frame_set(index)
                     mesh_name = blender_object.name + "_" + action.name.lower() + "_" + str(index) + ".mesh"
-                    write_mesh_file(blender_object, write_dir + '/' + mesh_name)
+                    print(mesh_name)
+                    write_mesh_file(blender_object, write_dir, mesh_name)
                     animation["keyframes"].append({"key": index, "mesh": mesh_name})
 
                 animation_file = open(write_dir + '/' + blender_object.name + "_" + action.name.lower() + ".animation", 'w')

@@ -11,7 +11,7 @@ def write(dir):
 
         print('Exporting: ' + blender_material.name)
 
-        material = {"ambient": tuple(blender_material.diffuse_color * blender_material.ambient),
+        material = {"ambient": tuple([0.0] * 3),
                     "diffuse": tuple(blender_material.diffuse_color),
                     "specular": tuple(blender_material.specular_color),
                     "opacity": blender_material.alpha,
