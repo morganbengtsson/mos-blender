@@ -75,30 +75,6 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
                 texture_uv_layer = bm.loops.layers.uv[0]
                 lightmap_uv_layer = bm.loops.layers.uv[1]
 
-                for vertex in bm.verts:
-                    if has_material_index(vertex, index):
-                        texture_uv = uv_from_vert_first(texture_uv_layer, vertex)
-                        texture_uv.y = 1.0 - texture_uv.y
-                        lightmap_uv = uv_from_vert_first(lightmap_uv_layer, vertex)
-                        lightmap_uv.y = 1.0 - lightmap_uv.y
-                        positions.append(vertex.co.to_tuple())
-                        normals.append(vertex.normal.to_tuple())
-                        tangents.append((0, 0, 0))
-                        texture_uvs.append(texture_uv.to_tuple())
-                        lightmap_uvs.append(lightmap_uv.to_tuple())
-                for face in bm.faces:
-                    if face.material_index == index:
-                        face.loops.index_update()
-                        for loop in face.loops:
-                            indices.append(loop.vert.index)
-
-                print(len(bm.verts))
-                print(len(positions))
-                print(positions)
-                print(len(indices))
-                print(indices)
-
-                """
                 for face in bm.faces:
                     if face.material_index == index:
                         face.loops.index_update()
@@ -114,7 +90,7 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
                             normals.append(vert.normal.to_tuple())
                             tangents.append(loop.calc_tangent().to_tuple())
                             texture_uvs.append(texture_uv.to_tuple())
-                            lightmap_uvs.append(lightmap_uv.to_tuple())"""
+                            lightmap_uvs.append(lightmap_uv.to_tuple())
             else:
                 raise Exception(mesh.name + " must have two uv layers, with correct order. Texture first then lightmap ")
             bm.free()
