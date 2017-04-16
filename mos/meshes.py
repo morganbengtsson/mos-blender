@@ -79,12 +79,11 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
                     if face.material_index == index:
                         face.loops.index_update()
                         for loop in face.loops:
-                            print(texture_uv_layer)
-                            print(loop.vert.index)
                             texture_uv = loop[texture_uv_layer].uv
                             texture_uv.y = 1.0 - texture_uv.y
                             lightmap_uv = loop[lightmap_uv_layer].uv
                             lightmap_uv.y = 1.0 - lightmap_uv.y
+                            print(loop.index)
                             vert = loop.vert
                             positions.append(vert.co.to_tuple())
                             normals.append(vert.normal.to_tuple())
