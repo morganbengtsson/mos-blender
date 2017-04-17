@@ -57,8 +57,6 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
             filename = write_dir + '/' + custom_file_name
         else:
             filename = write_dir + '/' + name + ".mesh"
-            if len(blender_object.material_slots) > 1:
-                filename = write_dir + '/' + name + "_" + str(index) + ".mesh"
 
         print('Exporting: ' + filename)
         print(mesh_type)
@@ -84,16 +82,19 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
             lightmap_uv_layer = bm.loops.layers.uv[1]
 
             for i, f in enumerate(mesh.tessfaces):
+                temp_faces = []
                 for j, v in enumerate(f.vertices):
                     position = round_3d(mesh.vertices[v].co.to_tuple())
                     if f.use_smooth:
                         normal = round_3d(mesh.vertices[v].normal)
                     else:
                         normal = round_3d(f.normal.to_tuple())
-                    texture_uv = round_2d(mesh.tessface_uv_textures[0].data[i].uv[j][0:2])
-                    texture_uv.y = 1.0 - texture_uv.y
-                    lightmap_uv = round_2d(mesh.tessface_uv_textures[1].data[i].uv[j][0:2])
-                    lightmap_uv.y = 1.0 lightmap_uv.y
+                    texture_uv = list(round_2d(mesh.tessface_uv_textures[0].data[i].uv[j][0:2]))
+                    texture_uv[1] = 1.0 - texture_uv[1]
+                    texture_uv = tuple(texture_uv) #TODO: Not nice
+                    lightmap_uv = list(round_2d(mesh.tessface_uv_textures[1].data[i].uv[j][0:2]))
+                    lightmap_uv[1] = 1.0 - lightmap_uv[1]
+                    lightmap_uv = tuple(lightmap_uv) #TODO: Not nice
                     print(texture_uv)
 
                     key = position, normal, texture_uv, lightmap_uv
@@ -105,14 +106,24 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
                         normals.append(normal)
                         texture_uvs.append(texture_uv)
                         lightmap_uvs.append(texture_uv)
-                        faces.append(vertex_count)
+                        temp_faces.append(vertex_count)
+                        tangents.append((0.0, 0.0, 0.0))
                         vertex_count += 1
                     else:
                         inx = vertex_dict[key]
-                        faces.append(inx)
+                        temp_faces.append(inx)
 
+                if len(temp_faces) == 3:
+                    faces.append(temp_faces)
+                else:
+                    faces.append([temp_faces[0], temp_faces[1], temp_faces[2]])
+                    faces.append([temp_faces[0], temp_faces[2], temp_faces[3]])
+
+            indices = [val for sublist in faces for val in sublist]
             print(len(positions))
             print(positions)
+            print(len(indices))
+            print(indices)
 
             """
             for face in bm.faces:
