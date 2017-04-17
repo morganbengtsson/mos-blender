@@ -19,6 +19,11 @@ def has_material_index(vertex, index):
             return has_index
     return has_index
 
+def round_3d(v):
+    return round(v[0],6), round(v[1],6), round(v[2],6)
+
+def round_2d(v):
+    return round(v[0],6), round(v[1],6)
 
 def write_mesh_file(blender_object, write_dir, custom_file_name=None):
     try:
@@ -48,71 +53,109 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
         raise RuntimeError("Error in object " + blender_object.name)
 
     if mesh_type != "none":
-        for index, slot in enumerate(blender_object.material_slots):
-            if custom_file_name:
-                filename = write_dir + '/' + custom_file_name
-            else:
-                filename = write_dir + '/' + name + ".mesh"
-                if len(blender_object.material_slots) > 1:
-                    filename = write_dir + '/' + name + "_" + str(index) + ".mesh"
+        if custom_file_name:
+            filename = write_dir + '/' + custom_file_name
+        else:
+            filename = write_dir + '/' + name + ".mesh"
+            if len(blender_object.material_slots) > 1:
+                filename = write_dir + '/' + name + "_" + str(index) + ".mesh"
 
-            print('Exporting: ' + filename)
-            print(mesh_type)
+        print('Exporting: ' + filename)
+        print(mesh_type)
 
-            bm = bmesh.new()
-            bm.from_mesh(mesh)
+        bm = bmesh.new()
+        bm.from_mesh(mesh)
 
-            bmesh.ops.triangulate(bm, faces=bm.faces, quad_method=2)
+        bmesh.ops.triangulate(bm, faces=bm.faces, quad_method=2)
 
-            indices = []
-            positions = []
-            normals = []
-            tangents = []
-            texture_uvs = []
-            lightmap_uvs = []
+        indices = []
+        positions = []
+        normals = []
+        tangents = []
+        texture_uvs = []
+        lightmap_uvs = []
 
-            if len(mesh.uv_layers) >= 2:
-                texture_uv_layer = bm.loops.layers.uv[0]
-                lightmap_uv_layer = bm.loops.layers.uv[1]
+        faces = []
+        vertex_dict = {}
+        vertex_count = 0
 
-                for face in bm.faces:
-                    if face.material_index == index:
-                        face.loops.index_update()
-                        for loop in face.loops:
-                            texture_uv = loop[texture_uv_layer].uv
-                            texture_uv.y = 1.0 - texture_uv.y
-                            lightmap_uv = loop[lightmap_uv_layer].uv
-                            lightmap_uv.y = 1.0 - lightmap_uv.y
-                            print(loop.index)
-                            vert = loop.vert
-                            positions.append(vert.co.to_tuple())
-                            normals.append(vert.normal.to_tuple())
-                            tangents.append(loop.calc_tangent().to_tuple())
-                            texture_uvs.append(texture_uv.to_tuple())
-                            lightmap_uvs.append(lightmap_uv.to_tuple())
-            else:
-                raise Exception(mesh.name + " must have two uv layers, with correct order. Texture first then lightmap ")
-            bm.free()
-            del bm
+        if len(mesh.uv_layers) >= 2:
+            texture_uv_layer = bm.loops.layers.uv[0]
+            lightmap_uv_layer = bm.loops.layers.uv[1]
 
-            mesh_file = open(filename, 'bw')
+            for i, f in enumerate(mesh.tessfaces):
+                for j, v in enumerate(f.vertices):
+                    position = round_3d(mesh.vertices[v].co.to_tuple())
+                    if f.use_smooth:
+                        normal = round_3d(mesh.vertices[v].normal)
+                    else:
+                        normal = round_3d(f.normal.to_tuple())
+                    texture_uv = round_2d(mesh.tessface_uv_textures[0].data[i].uv[j][0:2])
+                    texture_uv.y = 1.0 - texture_uv.y
+                    lightmap_uv = round_2d(mesh.tessface_uv_textures[1].data[i].uv[j][0:2])
+                    lightmap_uv.y = 1.0 lightmap_uv.y
+                    print(texture_uv)
 
-            # Header
-            mesh_file.write(struct.pack('i', len(positions)))
-            mesh_file.write(struct.pack('i', len(indices)))
+                    key = position, normal, texture_uv, lightmap_uv
+                    vertex_index = vertex_dict.get(key)
 
-            # Body
-            for v in zip(positions, normals, tangents, texture_uvs, lightmap_uvs):
-                mesh_file.write(struct.pack('fff', *v[0]))
-                mesh_file.write(struct.pack('fff', *v[1]))
-                mesh_file.write(struct.pack('fff', *v[2]))
-                mesh_file.write(struct.pack('ff', *v[3]))
-                mesh_file.write(struct.pack('ff', *v[4]))
+                    if vertex_index is None:  # vertex not found
+                        vertex_dict[key] = vertex_count
+                        positions.append(position)
+                        normals.append(normal)
+                        texture_uvs.append(texture_uv)
+                        lightmap_uvs.append(texture_uv)
+                        faces.append(vertex_count)
+                        vertex_count += 1
+                    else:
+                        inx = vertex_dict[key]
+                        faces.append(inx)
 
-            for i in indices:
-                mesh_file.write(struct.pack('I', i))
+            print(len(positions))
+            print(positions)
 
-            mesh_file.close()
+            """
+            for face in bm.faces:
+                if face.material_index == index:
+                    face.loops.index_update()
+                    for loop in face.loops:
+                        texture_uv = loop[texture_uv_layer].uv
+                        texture_uv.y = 1.0 - texture_uv.y
+                        for l in loop.vert.link_loops:
+                            uv = l[texture_uv_layer].uv
+                            print(uv)
+                        lightmap_uv = loop[lightmap_uv_layer].uv
+                        lightmap_uv.y = 1.0 - lightmap_uv.y
+                        print("---")
+                        vert = loop.vert
+                        positions.append(vert.co.to_tuple())
+                        normals.append(vert.normal.to_tuple())
+                        tangents.append(loop.calc_tangent().to_tuple())
+                        texture_uvs.append(texture_uv.to_tuple())
+                        lightmap_uvs.append(lightmap_uv.to_tuple())"""
+        else:
+            raise Exception(mesh.name + " must have two uv layers, with correct order. Texture first then lightmap ")
+        bm.free()
+        del bm
+
+        mesh_file = open(filename, 'bw')
+
+        # Header
+        mesh_file.write(struct.pack('i', len(positions)))
+        mesh_file.write(struct.pack('i', len(indices)))
+
+        # Body
+        for v in zip(positions, normals, tangents, texture_uvs, lightmap_uvs):
+            mesh_file.write(struct.pack('fff', *v[0]))
+            mesh_file.write(struct.pack('fff', *v[1]))
+            mesh_file.write(struct.pack('fff', *v[2]))
+            mesh_file.write(struct.pack('ff', *v[3]))
+            mesh_file.write(struct.pack('ff', *v[4]))
+
+        for i in indices:
+            mesh_file.write(struct.pack('I', i))
+
+        mesh_file.close()
 
 
 def write(write_dir, objects):

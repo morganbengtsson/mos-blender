@@ -62,12 +62,8 @@ class Model(object):
         model.transform = transform
 
         print(len(blender_object.material_slots))
-        if len(blender_object.material_slots) > 1:
-            model.models = [Model(name=blender_object.name + "_" + str(index),
-                                      mesh=mesh_name(blender_object) + "_" + str(index) + ".mesh",
-                                      material=slot.name + ".material") for index, slot in enumerate(blender_object.material_slots)]
 
-        elif blender_object.type == "MESH":
+        if blender_object.type == "MESH":
             model.mesh = mesh_name(blender_object)
             model.mesh += ".mesh"
 
