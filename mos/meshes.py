@@ -100,8 +100,20 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
                     key = position, normal, texture_uv, lightmap_uv
                     vertex_index = vertex_dict.get(key)
 
-                    if vertex_index is None:  # vertex not found
-                        vertex_dict[key] = vertex_count
+                    if blender_object.data.polygons[0].use_smooth :
+                        if vertex_index is None:  # vertex not found
+                            vertex_dict[key] = vertex_count
+                            positions.append(position)
+                            normals.append(normal)
+                            texture_uvs.append(texture_uv)
+                            lightmap_uvs.append(texture_uv)
+                            temp_faces.append(vertex_count)
+                            tangents.append((0.0, 0.0, 0.0))
+                            vertex_count += 1
+                        else:
+                            inx = vertex_dict[key]
+                            temp_faces.append(inx)
+                    else:
                         positions.append(position)
                         normals.append(normal)
                         texture_uvs.append(texture_uv)
@@ -109,9 +121,6 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
                         temp_faces.append(vertex_count)
                         tangents.append((0.0, 0.0, 0.0))
                         vertex_count += 1
-                    else:
-                        inx = vertex_dict[key]
-                        temp_faces.append(inx)
 
                 if len(temp_faces) == 3:
                     faces.append(temp_faces)
