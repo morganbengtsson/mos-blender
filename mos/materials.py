@@ -15,9 +15,9 @@ def write(dir):
                     "diffuse": tuple(blender_material.diffuse_color),
                     "specular": tuple(blender_material.specular_color),
                     "opacity": blender_material.alpha,
-                    "specular_exponent": float(blender_material.specular_hardness),
+                    "shininess": float(blender_material.specular_hardness),
                     "diffuse_map": blender_material.get("diffuse_map"),
-                    "normal_map" : blender_material.get("normal_map"),
+                    "normal_map": blender_material.get("normal_map"),
                     "light_map": blender_material.get("light_map"),
                     "diffuse_environment_map": blender_material.get("diffuse_environment_map"),
                     "specular_environment_map": blender_material.get("specular_environment_map")}
