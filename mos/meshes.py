@@ -19,8 +19,10 @@ def has_material_index(vertex, index):
             return has_index
     return has_index
 
+
 def round_3d(v):
     return round(v[0],6), round(v[1],6), round(v[2],6)
+
 
 def round_2d(v):
     return round(v[0],6), round(v[1],6)
@@ -95,7 +97,7 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
                     lightmap_uv = list(round_2d(mesh.tessface_uv_textures[1].data[i].uv[j][0:2]))
                     lightmap_uv[1] = 1.0 - lightmap_uv[1]
                     lightmap_uv = tuple(lightmap_uv) #TODO: Not nice
-                    print(texture_uv)
+                    #print(texture_uv)
 
                     key = position, normal, texture_uv, lightmap_uv
                     vertex_index = vertex_dict.get(key)
@@ -129,10 +131,10 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
                     faces.append([temp_faces[0], temp_faces[2], temp_faces[3]])
 
             indices = [val for sublist in faces for val in sublist]
-            print(len(positions))
-            print(positions)
-            print(len(indices))
-            print(indices)
+            #print(len(positions))
+            #print(positions)
+            #print(len(indices))
+            #print(indices)
 
             """
             for face in bm.faces:
