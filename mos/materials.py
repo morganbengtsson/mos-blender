@@ -10,18 +10,35 @@ def write(dir):
         material_file = open(dir + '/' + blender_material.name + '.material', 'bw')
 
         print('Exporting: ' + blender_material.name)
+        node = blender_material.node_tree.nodes.get("Material Output").inputs[0].links[0].from_node
 
-        # albedo = blender_material.node_tree.nodes["Glossy BSDF"].inputs[0].default_value
-        # roughness = blender_material.node_tree.nodes["Glossy BSDF"].inputs[1].default_value
+        albedo = (0.0, 0.0, 0.0) if color_input.default_value[:3] is None else color_input.default_value[:3]
 
-        albedo = blender_material.node_tree.nodes.get("Glossy BSDF").inputs[0].default_value[:3]
-        roughness = blender_material.node_tree.nodes.get("Glossy BSDF").inputs[1].default_value
+        albedo_map = None
+        color_input = node.inputs.get("Color")
+        if color_input.is_linked:
+            albedo_map = color_input.links[0].from_node.image.name
+
+        normal_map = None
+        normal_input = node.inputs.get("Normal")
+        if normal_input.is_linked:
+            normal_map = normal_input.links[0].from_node.image.name
+
+        metallic_map = None
+        metallic_input = node.inputs.get("Metallic")
+        if metallic_input.is_linked:
+            metallic_map = metallic_input.links[0].from_node.image.name
+
+        roughness = node.inputs.get("Roughness").default_value
+        metallic = node.inputs.get("Metallic").default_value
 
         material = {"albedo": tuple(albedo),
                     "opacity": blender_material.alpha,
                     "roughness": float(roughness),
-                    "albedo_map": blender_material.get("albedo_map"),
-                    "normal_map": blender_material.get("normal_map"),
+                    "metallic": float(metallic),
+                    "albedo_map": albedo_map,
+                    "normal_map": normal_map,
+                    "metallic_map": metallic_map,
                     "light_map": blender_material.get("light_map")}
 
         print(material)
@@ -35,4 +52,8 @@ def write(dir):
         json_file = open(dir + '/' + blender_material.name + '.material', 'w')
         json.dump(material, json_file)
         json_file.close()
+
+
+
+
 
