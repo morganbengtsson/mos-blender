@@ -3,6 +3,14 @@ import struct
 import json
 
 
+def get_linked_map(input_name, node):
+    node_input = node.inputs.get("Color")
+    linked_map = None
+    if node_input.is_linked:
+        linked_map = node_input.links[0].from_node.image.name
+    return linked_map
+
+
 def write(dir):
     blender_materials = bpy.data.materials
 
