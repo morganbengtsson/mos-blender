@@ -94,6 +94,7 @@ def export_models_menu_func(self, context):
 def export_entities_level_func(self, context):
     self.layout.operator(ExportEntitiesFormat.bl_idname, text=ExportEntitiesFormat.bl_label[7:] + " (%s)" % ExportEntitiesFormat.filename_ext)
 
+
 def register():
     bpy.utils.register_module(__name__)
 
@@ -116,3 +117,4 @@ def unregister():
 
 if __name__ == "__main__":
     register()
+

@@ -4,7 +4,7 @@ import json
 
 
 def get_linked_map(input_name, node):
-    node_input = node.inputs.get("Color")
+    node_input = node.inputs.get(input_name)
     linked_map = None
     if node_input.is_linked:
         linked_map = node_input.links[0].from_node.image.name
@@ -20,22 +20,14 @@ def write(dir):
         print('Exporting: ' + blender_material.name)
         node = blender_material.node_tree.nodes.get("Material Output").inputs[0].links[0].from_node
 
+        color_input = node.inputs.get("Color")
         albedo = (0.0, 0.0, 0.0) if color_input.default_value[:3] is None else color_input.default_value[:3]
 
-        albedo_map = None
-        color_input = node.inputs.get("Color")
-        if color_input.is_linked:
-            albedo_map = color_input.links[0].from_node.image.name
-
-        normal_map = None
-        normal_input = node.inputs.get("Normal")
-        if normal_input.is_linked:
-            normal_map = normal_input.links[0].from_node.image.name
-
-        metallic_map = None
-        metallic_input = node.inputs.get("Metallic")
-        if metallic_input.is_linked:
-            metallic_map = metallic_input.links[0].from_node.image.name
+        albedo_map = get_linked_map("Color", node)
+        normal_map = get_linked_map("Normal", node)
+        metallic_map = get_linked_map("Metallic", node)
+        roughness_map = get_linked_map("Roughness", node)
+        #ambient_occlusion_map = get_linked_map("Ambient occlusion", node)
 
         roughness = node.inputs.get("Roughness").default_value
         metallic = node.inputs.get("Metallic").default_value
@@ -47,6 +39,8 @@ def write(dir):
                     "albedo_map": albedo_map,
                     "normal_map": normal_map,
                     "metallic_map": metallic_map,
+                    "roughness_map": roughness_map,
+                    "ambient_occlusion_map": "ambient_occlusion_map",
                     "light_map": blender_material.get("light_map")}
 
         print(material)

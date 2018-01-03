@@ -39,7 +39,7 @@ def to_entity(directory, blender_object):
     print("children: " + str(export_children))
     #models.write(directory, [blender_object], True if entity_type is None else export_children)
 
-    if blender_object.type == "MESH":
+    if blender_object.type in {"MESH", "EMPTY"}:
         entity["model"] = blender_object.name + ".model"
     entity["id"] = blender_object.as_pointer()
 
@@ -58,6 +58,7 @@ def to_entities(directory, blender_objects):
 
 def write(dir, filepath, objects):
     blender_objects = [o for o in objects if not o.parent and o.type in {"MESH", "EMPTY", "CAMERA"}]
+    blender_objects = sorted(blender_objects, key=lambda x: x.name, reverse=False)
 
     directory = dir
 
