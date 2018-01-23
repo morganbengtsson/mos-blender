@@ -15,8 +15,6 @@ def write(dir):
     blender_materials = bpy.data.materials
 
     for blender_material in blender_materials:
-        material_file = open(dir + '/' + blender_material.name + '.material', 'bw')
-
         print('Exporting: ' + blender_material.name)
         node = blender_material.node_tree.nodes.get("Material Output").inputs[0].links[0].from_node
 
@@ -31,11 +29,13 @@ def write(dir):
 
         roughness = node.inputs.get("Roughness").default_value
         metallic = node.inputs.get("Metallic").default_value
+        emission = node.inputs.get("Emission").default_value
 
         material = {"albedo": tuple(albedo),
                     "opacity": blender_material.alpha,
                     "roughness": float(roughness),
                     "metallic": float(metallic),
+                    "emission": float(emission),
                     "albedo_map": albedo_map,
                     "normal_map": normal_map,
                     "metallic_map": metallic_map,
@@ -43,17 +43,10 @@ def write(dir):
                     "ambient_occlusion_map": "ambient_occlusion_map",
                     "light_map": blender_material.get("light_map")}
 
-        print(material)
-        material_file.write(struct.pack('fff', *material["albedo"]))
-        material_file.write(struct.pack('f', material["opacity"]))
-        material_file.write(struct.pack('f', material["roughness"]))
-
-        material_file.close()
-        print("Wrote file: " + material_file.name)
-
         json_file = open(dir + '/' + blender_material.name + '.material', 'w')
         json.dump(material, json_file)
         json_file.close()
+        print("Wrote file: " + blender_material.name + ".material")
 
 
 
