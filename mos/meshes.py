@@ -74,6 +74,7 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
         tangents = []
         texture_uvs = []
         lightmap_uvs = []
+        aos = []
 
         faces = []
         vertex_dict = {}
@@ -97,6 +98,7 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
                     lightmap_uv = list(round_2d(mesh.tessface_uv_textures[1].data[i].uv[j][0:2]))
                     lightmap_uv[1] = 1.0 - lightmap_uv[1]
                     lightmap_uv = tuple(lightmap_uv) #TODO: Not nice
+                    ao = 1.0
                     #print(texture_uv)
 
                     key = position, normal, texture_uv, lightmap_uv
@@ -111,6 +113,7 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
                             lightmap_uvs.append(texture_uv)
                             temp_faces.append(vertex_count)
                             tangents.append((0.0, 0.0, 0.0))
+                            aos.append(ao)
                             vertex_count += 1
                         else:
                             inx = vertex_dict[key]
@@ -122,6 +125,7 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
                         lightmap_uvs.append(texture_uv)
                         temp_faces.append(vertex_count)
                         tangents.append((0.0, 0.0, 0.0))
+                        aos.append(ao)
                         vertex_count += 1
 
                 if len(temp_faces) == 3:
@@ -167,12 +171,13 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
         mesh_file.write(struct.pack('i', len(indices)))
 
         # Body
-        for v in zip(positions, normals, tangents, texture_uvs, lightmap_uvs):
+        for v in zip(positions, normals, tangents, texture_uvs, lightmap_uvs, aos):
             mesh_file.write(struct.pack('fff', *v[0]))
             mesh_file.write(struct.pack('fff', *v[1]))
             mesh_file.write(struct.pack('fff', *v[2]))
             mesh_file.write(struct.pack('ff', *v[3]))
             mesh_file.write(struct.pack('ff', *v[4]))
+            mesh_file.write(struct.pack('f', v[5]))
 
         for i in indices:
             mesh_file.write(struct.pack('I', i))
