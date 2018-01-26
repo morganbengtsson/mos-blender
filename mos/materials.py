@@ -25,22 +25,24 @@ def write(dir):
         normal_map = get_linked_map("Normal", node)
         metallic_map = get_linked_map("Metallic", node)
         roughness_map = get_linked_map("Roughness", node)
-        #ambient_occlusion_map = get_linked_map("Ambient occlusion", node)
+        ambient_occlusion_map = get_linked_map("Ambient occlusion", node)
 
         roughness = node.inputs.get("Roughness").default_value
         metallic = node.inputs.get("Metallic").default_value
         emission = node.inputs.get("Emission").default_value
+        ambient_occlusion = node.inputs.get("Ambient occlusion").default_value
 
         material = {"albedo": tuple(albedo),
                     "opacity": blender_material.alpha,
                     "roughness": float(roughness),
                     "metallic": float(metallic),
                     "emission": float(emission),
+                    "ambient_occlusion": float(ambient_occlusion),
                     "albedo_map": albedo_map,
                     "normal_map": normal_map,
                     "metallic_map": metallic_map,
                     "roughness_map": roughness_map,
-                    "ambient_occlusion_map": "ambient_occlusion_map",
+                    "ambient_occlusion_map": ambient_occlusion_map,
                     "light_map": blender_material.get("light_map")}
 
         json_file = open(dir + '/' + blender_material.name + '.material', 'w')
