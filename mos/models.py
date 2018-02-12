@@ -29,7 +29,7 @@ class Model(object):
         self.models = models
 
     @classmethod
-    def from_blender_object(cls, blender_object, force):
+    def from_blender_object(cls, directory, blender_object, force):
         if not blender_object:
             return None
 
@@ -38,10 +38,6 @@ class Model(object):
 
         if blender_object.type not in {"MESH", "EMPTY"}:
             return None
-
-        if blender_object.parent is not None and not force:
-            if blender_object.get("entity_type") is not None:
-                return None
 
         print("---")
         print("Exporting: " + blender_object.name)
@@ -73,16 +69,22 @@ class Model(object):
         if blender_object.get("lit") is not None:
             model.lit = bool(blender_object.get("lit"))
 
+        if blender_object.parent is not None and not force:
+            if blender_object.get("entity_type") is not None:
+                model.models = model.models + to_models(directory, blender_object.children, force)
+                write_model(directory, model)
+                return None
+
         return model
 
 
-def to_models(blender_objects, force):
+def to_models(directory, blender_objects, force):
     root = []
     for object in blender_objects:
-        model = Model.from_blender_object(object, force)
+        model = Model.from_blender_object(directory, object, force)
         if model:
             #model.models.extend(to_models(object.children, force))
-            model.models = model.models + to_models(object.children, force)
+            model.models = model.models + to_models(directory, object.children, force)
             root.append(model)
     return root
 
@@ -95,7 +97,7 @@ def write_model(directory, model):
 
 def write(directory, objects, force=False):
     print("Writing models.")
-    models = to_models(objects, force)
+    models = to_models(directory, objects, force)
     for model in models:
         write_model(directory, model)
 
