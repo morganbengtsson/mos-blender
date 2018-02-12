@@ -87,15 +87,20 @@ def to_models(blender_objects, force):
     return root
 
 
+def write_model(directory, model):
+    model_file = open(directory + '/' + model.name + ".model", 'w')
+    model_file.write(json.dumps(model, cls=ObjectEncoder))
+    model_file.close()
+
+
 def write(directory, objects, force=False):
     print("Writing models.")
     models = to_models(objects, force)
     for model in models:
-        file = open(directory + '/' + model.name + ".model", 'w')
-        file.write(json.dumps(model, cls=ObjectEncoder))
-        file.close()
+        write_model(directory, model)
 
     print("Writing materials.")
     materials.write(directory)
+
     print("Writing meshes.")
     meshes.write(directory, [o for o in bpy.data.objects if o.type == "MESH"])
