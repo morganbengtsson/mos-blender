@@ -101,7 +101,8 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
                     ao = 1.0
                     #print(texture_uv)
 
-                    key = position, normal, texture_uv, lightmap_uv
+                    #key = position, normal, texture_uv, lightmap_uv
+                    key = mesh.vertices[v].index
                     vertex_index = vertex_dict.get(key)
 
                     if blender_object.data.polygons[0].use_smooth :
