@@ -36,7 +36,7 @@ def write(dir):
                     "opacity": blender_material.alpha,
                     "roughness": float(roughness),
                     "metallic": float(metallic),
-                    "emission": float(emission),
+                    "emission": tuple(emission),
                     "ambient_occlusion": float(ambient_occlusion),
                     "albedo_map": albedo_map,
                     "normal_map": normal_map,
