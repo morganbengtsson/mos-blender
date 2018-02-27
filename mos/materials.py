@@ -29,7 +29,7 @@ def write(dir):
 
         roughness = node.inputs.get("Roughness").default_value
         metallic = node.inputs.get("Metallic").default_value
-        emission = node.inputs.get("Emission").default_value
+        emission = node.inputs.get("Emission").default_value[:3]
         ambient_occlusion = node.inputs.get("Ambient occlusion").default_value
 
         material = {"albedo": tuple(albedo),
