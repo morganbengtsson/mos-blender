@@ -73,16 +73,14 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
         normals = []
         tangents = []
         texture_uvs = []
-        lightmap_uvs = []
         aos = []
 
         faces = []
         vertex_dict = {}
         vertex_count = 0
 
-        if len(mesh.uv_layers) >= 2:
+        if len(mesh.uv_layers) >= 1:
             texture_uv_layer = bm.loops.layers.uv[0]
-            lightmap_uv_layer = bm.loops.layers.uv[1]
 
             for i, f in enumerate(mesh.tessfaces):
                 temp_faces = []
@@ -95,13 +93,9 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
                     texture_uv = list(round_2d(mesh.tessface_uv_textures[0].data[i].uv[j][0:2]))
                     texture_uv[1] = 1.0 - texture_uv[1]
                     texture_uv = tuple(texture_uv) #TODO: Not nice
-                    lightmap_uv = list(round_2d(mesh.tessface_uv_textures[1].data[i].uv[j][0:2]))
-                    lightmap_uv[1] = 1.0 - lightmap_uv[1]
-                    lightmap_uv = tuple(lightmap_uv) #TODO: Not nice
                     ao = 1.0
                     #print(texture_uv)
 
-                    #key = position, normal, texture_uv, lightmap_uv
                     key = mesh.vertices[v].index
                     vertex_index = vertex_dict.get(key)
 
@@ -111,7 +105,6 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
                             positions.append(position)
                             normals.append(normal)
                             texture_uvs.append(texture_uv)
-                            lightmap_uvs.append(texture_uv)
                             temp_faces.append(vertex_count)
                             tangents.append((0.0, 0.0, 0.0))
                             aos.append(ao)
@@ -123,7 +116,6 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
                         positions.append(position)
                         normals.append(normal)
                         texture_uvs.append(texture_uv)
-                        lightmap_uvs.append(texture_uv)
                         temp_faces.append(vertex_count)
                         tangents.append((0.0, 0.0, 0.0))
                         aos.append(ao)
@@ -136,32 +128,9 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
                     faces.append([temp_faces[0], temp_faces[2], temp_faces[3]])
 
             indices = [val for sublist in faces for val in sublist]
-            #print(len(positions))
-            #print(positions)
-            #print(len(indices))
-            #print(indices)
 
-            """
-            for face in bm.faces:
-                if face.material_index == index:
-                    face.loops.index_update()
-                    for loop in face.loops:
-                        texture_uv = loop[texture_uv_layer].uv
-                        texture_uv.y = 1.0 - texture_uv.y
-                        for l in loop.vert.link_loops:
-                            uv = l[texture_uv_layer].uv
-                            print(uv)
-                        lightmap_uv = loop[lightmap_uv_layer].uv
-                        lightmap_uv.y = 1.0 - lightmap_uv.y
-                        print("---")
-                        vert = loop.vert
-                        positions.append(vert.co.to_tuple())
-                        normals.append(vert.normal.to_tuple())
-                        tangents.append(loop.calc_tangent().to_tuple())
-                        texture_uvs.append(texture_uv.to_tuple())
-                        lightmap_uvs.append(lightmap_uv.to_tuple())"""
         else:
-            raise Exception(mesh.name + " must have two uv layers, with correct order. Texture first then lightmap ")
+            raise Exception(mesh.name + " must have one uv layer")
         bm.free()
         del bm
 
@@ -172,12 +141,11 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
         mesh_file.write(struct.pack('i', len(indices)))
 
         # Body
-        for v in zip(positions, normals, tangents, texture_uvs, lightmap_uvs, aos):
+        for v in zip(positions, normals, tangents, texture_uvs, aos):
             mesh_file.write(struct.pack('fff', *v[0]))
             mesh_file.write(struct.pack('fff', *v[1]))
             mesh_file.write(struct.pack('fff', *v[2]))
             mesh_file.write(struct.pack('ff', *v[3]))
-            mesh_file.write(struct.pack('ff', *v[4]))
             mesh_file.write(struct.pack('f', v[5]))
 
         for i in indices:
