@@ -42,8 +42,7 @@ def write(dir):
                     "normal_map": normal_map,
                     "metallic_map": metallic_map,
                     "roughness_map": roughness_map,
-                    "ambient_occlusion_map": ambient_occlusion_map,
-                    "light_map": blender_material.get("light_map")}
+                    "ambient_occlusion_map": ambient_occlusion_map}
 
         json_file = open(dir + '/' + blender_material.name + '.material', 'w')
         json.dump(material, json_file)

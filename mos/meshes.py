@@ -146,7 +146,7 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
             mesh_file.write(struct.pack('fff', *v[1]))
             mesh_file.write(struct.pack('fff', *v[2]))
             mesh_file.write(struct.pack('ff', *v[3]))
-            mesh_file.write(struct.pack('f', v[5]))
+            mesh_file.write(struct.pack('f', v[4]))
 
         for i in indices:
             mesh_file.write(struct.pack('I', i))
@@ -179,6 +179,4 @@ def write(write_dir, objects):
                 animation_file = open(write_dir + '/' + blender_object.name + "_" + action.name.lower() + ".animation", 'w')
                 animation_file.write(json.dumps(animation))
                 animation_file.close()
-
-
 
