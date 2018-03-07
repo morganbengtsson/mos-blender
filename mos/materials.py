@@ -20,8 +20,12 @@ def write(dir):
 
         color_input = node.inputs.get("Color")
         albedo = (0.0, 0.0, 0.0) if color_input.default_value[:3] is None else color_input.default_value[:3]
-
         albedo_map = get_linked_map("Color", node)
+
+        emission_input = node.inputs.get("Emission")
+        emission = (0.0, 0.0, 0.0) if emission_input.default_value[:3] is None else emission_input.default_value[:3]
+        emission_map = get_linked_map("Emission", node)
+
         normal_map = get_linked_map("Normal", node)
         metallic_map = get_linked_map("Metallic", node)
         roughness_map = get_linked_map("Roughness", node)
@@ -29,7 +33,6 @@ def write(dir):
 
         roughness = node.inputs.get("Roughness").default_value
         metallic = node.inputs.get("Metallic").default_value
-        emission = node.inputs.get("Emission").default_value[:3]
         ambient_occlusion = node.inputs.get("Ambient occlusion").default_value
 
         material = {"albedo": tuple(albedo),
@@ -39,6 +42,7 @@ def write(dir):
                     "emission": tuple(emission),
                     "ambient_occlusion": float(ambient_occlusion),
                     "albedo_map": albedo_map,
+                    "emission_map": emission_map,
                     "normal_map": normal_map,
                     "metallic_map": metallic_map,
                     "roughness_map": roughness_map,
