@@ -1,5 +1,5 @@
 import json
-from . import models, materials, meshes
+from . import models, materials, meshes, lamps
 
 def to_entity(directory, blender_object):
     entity_type = blender_object.get("entity_type")
@@ -69,3 +69,5 @@ def write(directory, objects):
     materials.write(directory)
     print("Writing meshes.")
     meshes.write(directory, [o for o in objects if o.type == "MESH"])
+    print("Writing lamps")
+    lamps.write(directory)

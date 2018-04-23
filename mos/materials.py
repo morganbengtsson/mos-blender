@@ -19,12 +19,12 @@ def write(dir):
         node = blender_material.node_tree.nodes.get("Material Output").inputs[0].links[0].from_node
 
         color_input = node.inputs.get("Color")
-        albedo = (0.0, 0.0, 0.0) if color_input.default_value[:3] is None else color_input.default_value[:3]
         albedo_map = get_linked_map("Color", node)
+        albedo = (0.0, 0.0, 0.0) if not color_input.default_value[:3] else color_input.default_value[:3]
 
         emission_input = node.inputs.get("Emission")
-        emission = (0.0, 0.0, 0.0) if emission_input.default_value[:3] is None else emission_input.default_value[:3]
         emission_map = get_linked_map("Emission", node)
+        emission = (0.0, 0.0, 0.0) if not emission_input.default_value[:3] else emission_input.default_value[:3]
 
         normal_map = get_linked_map("Normal", node)
         metallic_map = get_linked_map("Metallic", node)
