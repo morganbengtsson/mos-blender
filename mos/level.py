@@ -9,7 +9,7 @@ def to_entity(directory, blender_object):
     print("type: ", end=" ")
     print(entity_type)
 
-    if not blender_object or blender_object.type not in {"MESH", "EMPTY", "CAMERA"}:
+    if not blender_object or blender_object.type not in {"MESH", "EMPTY", "CAMERA", "LAMP"}:
         return None
     if entity_type == "none":
         return None
@@ -43,6 +43,9 @@ def to_entity(directory, blender_object):
         entity["model"] = blender_object.name + ".model"
     entity["id"] = blender_object.as_pointer()
 
+    if blender_object.type in {"LAMP"}:
+        entity["lamp"] = blender_object.name + ".lamp"
+
     return entity
 
 
@@ -57,7 +60,7 @@ def to_entities(directory, blender_objects):
 
 
 def write(dir, filepath, objects):
-    blender_objects = [o for o in objects if not o.parent and o.type in {"MESH", "EMPTY", "CAMERA"}]
+    blender_objects = [o for o in objects if not o.parent and o.type in {"MESH", "EMPTY", "CAMERA", "LAMP"}]
     blender_objects = sorted(blender_objects, key=lambda x: x.name, reverse=False)
 
     directory = dir
