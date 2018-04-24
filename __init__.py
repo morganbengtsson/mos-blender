@@ -2,7 +2,7 @@ import bpy
 from bpy_extras.io_utils import ExportHelper
 import bmesh
 import os
-from .mos import level, materials, meshes, models, entities
+from .mos import level, materials, meshes, models
 
 bl_info = {
     "name":         "Mos export",
@@ -48,19 +48,6 @@ class ExportMeshesFormat(bpy.types.Operator, ExportHelper):
         return {'FINISHED'}
 
 
-class ExportEntitiesFormat(bpy.types.Operator, ExportHelper):
-    bl_idname = "export_entities.entity"
-    bl_label = "Export MOS entity format"
-    bl_options = {'PRESET'}
-    filename_ext = ".entity"
-
-    def execute(self, context):
-        blender_objects = [o for o in context.scene.objects if not o.parent and o.type in {"MESH", "EMPTY"}]
-        directory = os.path.dirname(self.filepath)
-        entities.write(directory, blender_objects)
-        return {'FINISHED'}
-
-
 class ExportModelsFormat(bpy.types.Operator, ExportHelper):
     bl_idname = "export_models.model"
     bl_label = "Export MOS model format"
@@ -68,7 +55,7 @@ class ExportModelsFormat(bpy.types.Operator, ExportHelper):
     filename_ext = ".model"
 
     def execute(self, context):
-        blender_objects = [o for o in context.scene.objects if not o.parent and (o.type == 'MESH' or (o.type == 'EMPTY' and o.children))]
+        blender_objects = [o for o in context.scene.objects]
         dir = os.path.dirname(self.filepath)
         models.write(dir, blender_objects)
 
@@ -90,11 +77,6 @@ def export_meshes_menu_func(self, context):
 def export_models_menu_func(self, context):
     self.layout.operator(ExportModelsFormat.bl_idname, text=ExportModelsFormat.bl_label[7:] + " (%s)" % ExportModelsFormat.filename_ext)
 
-
-def export_entities_level_func(self, context):
-    self.layout.operator(ExportEntitiesFormat.bl_idname, text=ExportEntitiesFormat.bl_label[7:] + " (%s)" % ExportEntitiesFormat.filename_ext)
-
-
 def register():
     bpy.utils.register_module(__name__)
 
@@ -102,8 +84,6 @@ def register():
     bpy.types.INFO_MT_file_export.append(export_materials_menu_func)
     bpy.types.INFO_MT_file_export.append(export_meshes_menu_func)
     bpy.types.INFO_MT_file_export.append(export_models_menu_func)
-    bpy.types.INFO_MT_file_export.append(export_entities_level_func)
-
 
 def unregister():
     bpy.utils.unregister_module(__name__)
@@ -112,7 +92,7 @@ def unregister():
     bpy.types.INFO_MT_file_export.remove(export_materials_menu_func)
     bpy.types.INFO_MT_file_export.remove(export_meshes_menu_func)
     bpy.types.INFO_MT_file_export.remove(export_models_menu_func)
-    bpy.types.INFO_MT_file_export.remove(export_entities_level_func)
+
 
 
 if __name__ == "__main__":

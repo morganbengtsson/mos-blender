@@ -2,7 +2,7 @@ import bpy
 import bmesh
 import struct
 import json
-from . import entities, materials, models, meshes, lights
+from . import materials, models, meshes, lights
 
 def to_entity(directory, blender_object):
     entity_type = blender_object.get("entity_type")
@@ -25,9 +25,6 @@ def to_entity(directory, blender_object):
     entity['name'] = blender_object.name
 
     m = blender_object.matrix_local
-    location = [m[0][3], m[1][3], m[2][3]]
-
-    entity['position'] = [location[0], location[1], location[2]]
 
     transform = list()
     for row in m.col:
@@ -74,7 +71,6 @@ def write(dir, filepath, objects):
 
     print("Writing models.")
     models.write(directory, objects)
-
     print("Writing materials.")
     materials.write(directory)
     print("Writing meshes.")

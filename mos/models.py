@@ -15,91 +15,73 @@ def mesh_name(blender_object):
     return name
 
 
-class Model(object):
+class Entity(object):
     def __init__(self, name=None, transform=[1, 0, 0, 0,
                                              0, 1, 0, 0,
                                              0, 0, 1, 0,
                                              0, 0, 0, 1], mesh=None,
-                 material=None, lit=True, models=list()):
+                 material=None, children=list(), type="model"):
         self.name = name
         self.transform = transform
         self.mesh = mesh
         self.material = material
-        self.lit = lit
-        self.models = models
+        self.children = list()
+        self.type = type
+        self.id = None
 
-    @classmethod
-    def from_blender_object(cls, directory, blender_object, force):
-        if not blender_object:
-            return None
+    def write(self, directory):
+        entity_type = self.type or "model"
+        model_file = open(directory + '/' + self.name + "." + entity_type, 'w')
+        model_file.write(json.dumps(self, cls=ObjectEncoder))
+        model_file.close()
 
-        if blender_object.get("export_model") in {"0", "False", "false", 0}:
-            return None
-
-        if blender_object.type not in {"MESH", "EMPTY"}:
-            return None
-
-        print("---")
-        print("Exporting: " + blender_object.name)
-        print("Type: " + blender_object.type)
-        print("Entity type: " + str(blender_object.get("entity_type")))
-        print("Parent: " + str(blender_object.parent))
-
-        model = Model()
-
-        model.name = blender_object.name
-
-        transform_matrix = blender_object.matrix_local
-
-        transform = list()
-        for row in transform_matrix.col:
-            transform.extend(list(row))
-
-        model.transform = transform
-
-        print(len(blender_object.material_slots))
-
-        if blender_object.type == "MESH":
-            model.mesh = mesh_name(blender_object)
-            model.mesh += ".mesh"
-
-        if blender_object.active_material:
-            model.material = str(blender_object.active_material.name + ".material")
-
-        if blender_object.get("lit") is not None:
-            model.lit = bool(blender_object.get("lit"))
-
-        if blender_object.parent is not None and not force:
-            if blender_object.get("entity_type") is not None:
-                model.models = model.models + to_models(directory, blender_object.children, force)
-                write_model(directory, model)
-                return None
-
-        return model
+    def file_name(self):
+        return str(self.name) + "." + str(self.type)
 
 
-def to_models(directory, blender_objects, force):
-    root = []
-    for object in blender_objects:
-        model = Model.from_blender_object(directory, object, force)
-        if model:
-            #model.models.extend(to_models(object.children, force))
-            model.models = model.models + to_models(directory, object.children, force)
-            root.append(model)
-    return root
+def write_entity(blender_object, directory):
+        if blender_object.type not in {"MESH", "EMPTY", "LAMP"}:
+            print("Not supported")
+        else:
+            print("---")
+            print("Exporting: " + blender_object.name)
+            print("Type: " + blender_object.type)
+            print("Entity type: " + str(blender_object.get("entity_type")))
+            print("Parent: " + str(blender_object.parent))
+
+            entity = Entity()
+
+            entity.name = blender_object.name
+
+            transform_matrix = blender_object.matrix_local
+
+            transform = list()
+            for row in transform_matrix.col:
+                transform.extend(list(row))
+
+            entity.transform = transform
+
+            entity.type = blender_object.get("entity_type") or "model"
+
+            entity.id = blender_object.as_pointer()
+
+            if blender_object.type == "MESH":
+                entity.mesh = mesh_name(blender_object)
+                entity.mesh += ".mesh"
+
+            if blender_object.active_material:
+                entity.material = str(blender_object.active_material.name + ".material")
+
+            for child in blender_object.children:
+                write_entity(child, directory)
+
+            entity.write(directory)
 
 
-def write_model(directory, model):
-    model_file = open(directory + '/' + model.name + ".model", 'w')
-    model_file.write(json.dumps(model, cls=ObjectEncoder))
-    model_file.close()
-
-
-def write(directory, objects, force=False):
-    print("Writing models.")
-    models = to_models(directory, objects, force)
-    for model in models:
-        write_model(directory, model)
+def write(directory, objects):
+    print("Writing entities/models.")
+    for entity in objects:
+        write_entity(entity, directory)
 
     print("Writing materials.")
     materials.write(directory)
