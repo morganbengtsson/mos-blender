@@ -2,7 +2,7 @@ import bpy
 from bpy_extras.io_utils import ExportHelper
 import bmesh
 import os
-from .mos import level, materials, meshes, models
+from .mos import level, materials, meshes, entities
 
 bl_info = {
     "name":         "Mos export",
@@ -57,7 +57,7 @@ class ExportModelsFormat(bpy.types.Operator, ExportHelper):
     def execute(self, context):
         blender_objects = [o for o in context.scene.objects]
         dir = os.path.dirname(self.filepath)
-        models.write(dir, blender_objects)
+        entities.write(dir, blender_objects)
 
         return {'FINISHED'}
 

@@ -2,7 +2,7 @@ import bpy
 import bmesh
 import struct
 import json
-from . import materials, models, meshes, lights
+from . import materials, entities, meshes, lights
 
 def write(dir, filepath, objects):
     blender_objects = [o for o in objects if not o.parent and o.type in {"MESH", "EMPTY"}]
@@ -20,7 +20,7 @@ def write(dir, filepath, objects):
     file.close()
 
     print("Writing models.")
-    models.write(directory, objects)
+    entities.write(directory, objects)
     print("Writing materials.")
     materials.write(directory)
     print("Writing meshes.")
