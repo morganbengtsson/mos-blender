@@ -13,7 +13,7 @@ def write(dir, filepath, objects):
     root = list()
 
     print("Writing level.")
-    for blender_object in objects:
+    for blender_object in blender_objects:
         root.append(str(blender_object.name) + "." + str(blender_object.get("entity_type") or "model"))
     file = open(filepath, 'w')
     file.write(json.dumps(root))
@@ -25,7 +25,8 @@ def write(dir, filepath, objects):
     materials.write(directory)
     print("Writing meshes.")
     meshes.write(directory, [o for o in objects if o.type == "MESH"])
-    print("Writing lamps.")
-    lights.write(directory)
+
+    #print("Writing lamps.")
+    #lights.write(directory)
 
     return {'FINISHED'}
