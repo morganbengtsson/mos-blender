@@ -2,7 +2,7 @@ import bpy
 import bmesh
 import struct
 import json
-from . import entities, materials, models, meshes, lamps
+from . import entities, materials, models, meshes, lights
 
 def to_entity(directory, blender_object):
     entity_type = blender_object.get("entity_type")
@@ -44,7 +44,7 @@ def to_entity(directory, blender_object):
     entity["id"] = blender_object.as_pointer()
 
     if blender_object.type in {"LAMP"}:
-        entity["lamp"] = blender_object.name + ".lamp"
+        entity["lamp"] = blender_object.name + ".light"
 
     return entity
 
@@ -80,6 +80,6 @@ def write(dir, filepath, objects):
     print("Writing meshes.")
     meshes.write(directory, [o for o in objects if o.type == "MESH"])
     print("Writing lamps.")
-    lamps.write(directory)
+    lights.write(directory)
 
     return {'FINISHED'}

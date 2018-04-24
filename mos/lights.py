@@ -18,12 +18,18 @@ def write(dir):
         spot_size = blender_lamp.spot_size
         spot_blend = blender_lamp.spot_blend
 
-        lamp = {"color": tuple(color),
+        transform_matrix = blender_lamp.matrix_local
+        transform = list()
+        for row in transform_matrix.col:
+            transform.extend(list(row))
+
+        light = {"color": tuple(color),
                 "strength": float(strength),
                 "size": float(spot_size),
-                "blend": float(spot_blend)}
+                "blend": float(spot_blend),
+                 "transform": transform}
 
-        json_file = open(dir + '/' + blender_lamp.name + '.lamp', 'w')
-        json.dump(lamp, json_file)
+        json_file = open(dir + '/' + blender_lamp.name + '.light', 'w')
+        json.dump(light, json_file)
         json_file.close()
-        print("Wrote file: " + blender_lamp.name + ".lamp")
+        print("Wrote file: " + blender_lamp.name + ".light")
