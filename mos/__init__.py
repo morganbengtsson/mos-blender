@@ -1,1 +1,1 @@
-__all__ = ["materials", "meshes", "entities.py"]
+__all__ = ["materials", "meshes", "entities"]
