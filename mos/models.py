@@ -40,7 +40,7 @@ class Entity(object):
 
 
 def write_entity(blender_object, directory):
-        if blender_object.type not in {"MESH", "EMPTY", "LAMP"}:
+        if blender_object.type not in {"MESH", "EMPTY"}:
             print("Not supported")
         else:
             print("---")
@@ -72,10 +72,13 @@ def write_entity(blender_object, directory):
             if blender_object.active_material:
                 entity.material = str(blender_object.active_material.name + ".material")
 
-            for child in blender_object.children:
-                write_entity(child, directory)
+            for blender_child in blender_object.children:
+                entity_child = write_entity(blender_child, directory)
+                if entity_child:
+                    entity.children.append(entity_child.file_name())
 
             entity.write(directory)
+            return entity
 
 
 def write(directory, objects):
