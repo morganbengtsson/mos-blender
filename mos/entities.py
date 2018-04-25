@@ -30,7 +30,7 @@ class Entity(object):
         self.light = None
 
     def write(self, directory):
-        entity_type = self.type or "model"
+        entity_type = self.type
         entity_file = open(directory + '/' + self.name + "." + entity_type, 'w')
         entity_file.write(json.dumps(self, cls=ObjectEncoder))
         entity_file.close()
@@ -55,9 +55,9 @@ def write_entity(blender_object, directory):
 
         entity.transform = transform
 
-        t = "model" if blender_object.type in {"MESH", "EMPTY"} else "light" if blender_object.type == "LAMP" else "model"
+        extension = "model" if blender_object.type in {"MESH", "EMPTY"} else "light" if blender_object.type == "LAMP" else "model"
 
-        entity.type = blender_object.get("entity_type") or t
+        entity.type = blender_object.get("entity_type") or extension
 
         entity.id = blender_object.as_pointer()
 
