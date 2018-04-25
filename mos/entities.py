@@ -62,6 +62,9 @@ def write_entity(blender_object, directory):
             entity.mesh = mesh_name(blender_object)
             entity.mesh += ".mesh"
 
+        if blender_object.type == "LAMP":
+            entity.lamp = blender_object.data.name + ".light_data"
+
         if blender_object.active_material:
             entity.material = str(blender_object.active_material.name + ".material")
 

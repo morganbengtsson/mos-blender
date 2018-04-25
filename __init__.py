@@ -2,7 +2,7 @@ import bpy
 from bpy_extras.io_utils import ExportHelper
 import bmesh
 import os
-from .mos import level, materials, meshes, entities
+from .mos import level, materials, meshes, entities, light_data
 
 bl_info = {
     "name":         "Mos export",
@@ -45,6 +45,18 @@ class ExportMeshesFormat(bpy.types.Operator, ExportHelper):
 
     def execute(self, context):
         meshes.write(os.path.dirname(self.filepath), context.selected_objects)
+        return {'FINISHED'}
+
+
+class ExportLightDataFormat(bpy.types.Operator, ExportHelper):
+    bl_idname = "export_light_data.light_data"
+    bl_label = "Export MOS lights"
+    bl_options = {'PRESET'}
+    filename_ext = ".light_data"
+
+    def execute(self, context):
+        # Todo selected objects
+        light_data.write(os.path.dirname(self.filepath))
         return {'FINISHED'}
 
 

@@ -2,7 +2,7 @@ import bpy
 import bmesh
 import struct
 import json
-from . import materials, entities, meshes, lights
+from . import materials, entities, meshes, light_data
 
 
 def write(dir, filepath, objects):
