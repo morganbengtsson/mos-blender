@@ -1,6 +1,6 @@
 import json
 import bpy
-from . import materials, meshes
+from . import materials, meshes, light_data
 
 
 class ObjectEncoder(json.JSONEncoder):
@@ -27,6 +27,7 @@ class Entity(object):
         self.children = list()
         self.type = "model"
         self.id = None
+        self.light = None
 
     def write(self, directory):
         entity_type = self.type or "model"
@@ -39,7 +40,7 @@ class Entity(object):
 
 
 def write_entity(blender_object, directory):
-    if blender_object.type not in {"MESH", "EMPTY"}:
+    if blender_object.type not in {"MESH", "EMPTY", "LAMP"}:
         print("Not supported")
     else:
         entity = Entity()
@@ -54,7 +55,9 @@ def write_entity(blender_object, directory):
 
         entity.transform = transform
 
-        entity.type = blender_object.get("entity_type") or "model"
+        t = "model" if blender_object.type in {"MESH", "EMPTY"} else "light" if blender_object.type == "LAMP" else "model"
+
+        entity.type = blender_object.get("entity_type") or t
 
         entity.id = blender_object.as_pointer()
 
@@ -63,7 +66,7 @@ def write_entity(blender_object, directory):
             entity.mesh += ".mesh"
 
         if blender_object.type == "LAMP":
-            entity.lamp = blender_object.data.name + ".light_data"
+            entity.light = blender_object.data.name + ".light_data"
 
         if blender_object.active_material:
             entity.material = str(blender_object.active_material.name + ".material")
@@ -86,4 +89,7 @@ def write(directory, objects):
     materials.write(directory)
 
     print("Writing meshes.")
-    meshes.write(directory, [o for o in bpy.data.objects if o.type == "MESH"])
+    meshes.write(directory, bpy.data.objects)
+
+    print("Writing light data.")
+    light_data.write(directory)

@@ -22,9 +22,8 @@ def write(dir, filepath, objects):
     print("Writing materials.")
     materials.write(dir)
     print("Writing meshes.")
-    meshes.write(dir, [o for o in objects if o.type == "MESH"])
-
-    #print("Writing lamps.")
-    #lights.write(directory)
+    meshes.write(dir, objects)
+    print("Writing lamps.")
+    light_data.write(dir)
 
     return {'FINISHED'}
