@@ -63,6 +63,9 @@ def write_entity(blender_object, directory):
 
         entity["id"] = blender_object.as_pointer()
 
+        if entity["type"] == "environment_light":
+            entity["extent"] = blender_object.empty_draw_size
+
         if blender_object.type == "MESH":
             entity["mesh"] = mesh_name(blender_object)
             entity["mesh"] += ".mesh"
