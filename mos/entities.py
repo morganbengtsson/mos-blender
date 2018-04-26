@@ -45,6 +45,11 @@ def write_entity(blender_object, directory):
     else:
         entity = Entity()
 
+        keys = blender_object.keys()
+        for key in keys:
+            if not key.startswith("_") and not key.startswith("cycles"):
+                setattr(entity, key, blender_object[key])
+
         entity.name = blender_object.name
 
         transform_matrix = blender_object.matrix_local
