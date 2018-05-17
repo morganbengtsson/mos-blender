@@ -33,10 +33,11 @@ def write(dir):
 
         roughness = node.inputs.get("Roughness").default_value
         metallic = node.inputs.get("Metallic").default_value
+        opacity = node.inputs.get("Opacity").default_value
         ambient_occlusion = node.inputs.get("Ambient occlusion").default_value
 
         material = {"albedo": tuple(albedo),
-                    "opacity": blender_material.alpha,
+                    "opacity": opacity,
                     "roughness": float(roughness),
                     "metallic": float(metallic),
                     "emission": tuple(emission),
