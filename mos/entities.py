@@ -57,6 +57,13 @@ def write_entity(blender_object, directory):
 
         entity["transform"] = transform
 
+        group = blender_object.dupli_group
+        if group:
+            for group_object in group.objects:
+                entity_child = write_entity(group_object, directory)
+                if entity_child:
+                    entity["children"].append(file_name(entity_child))
+
         extension = "model" if blender_object.type in {"MESH", "EMPTY"} else "light" if blender_object.type == "LAMP" else "model"
 
         entity["type"] = blender_object.get("entity_type") or extension
