@@ -1,12 +1,17 @@
 import json
 import bpy
 import idprop
+import os
 
 from . import materials, meshes, light_data
 
 
 def mesh_name(blender_object):
-    name = blender_object.data.name
+    name = ""
+    if blender_object.library:
+        library, file_extension = os.path.splitext(blender_object.library.filepath)
+        name += library + '/'
+    name += blender_object.data.name
     for modifier in blender_object.modifiers:
         name += "_" + modifier.name
     return name
