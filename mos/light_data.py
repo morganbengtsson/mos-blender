@@ -1,6 +1,6 @@
 import bpy
 import json
-
+import os
 
 def write(dir):
     blender_lamps = bpy.data.lamps
@@ -23,7 +23,14 @@ def write(dir):
                  "size": float(spot_size),
                  "blend": float(spot_blend)}
 
-        json_file = open(dir + '/' + blender_lamp.name + '.light_data', 'w')
+        library = ""
+        if blender_lamp.library:
+            library, file_extension = os.path.splitext(blender_lamp.library.filepath)
+            library = library + '/'
+
+        filepath = dir + '/' + library + blender_lamp.name + '.light_data'
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        json_file = open(filepath, 'w')
         json.dump(light, json_file)
         json_file.close()
         print("Wrote file: " + blender_lamp.name + ".light_data")
