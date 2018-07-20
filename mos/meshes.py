@@ -2,7 +2,7 @@ import bpy
 import bmesh
 import struct
 import json
-
+import os
 
 def uv_from_vert_first(uv_layer, v):
     for l in v.link_loops:
@@ -26,6 +26,7 @@ def round_3d(v):
 
 def round_2d(v):
     return round(v[0],6), round(v[1],6)
+
 
 def write_mesh_file(blender_object, write_dir, custom_file_name=None):
     try:
@@ -55,12 +56,16 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
         raise RuntimeError("Error in object " + blender_object.name)
 
     if mesh_type != "none":
+        library = ""
+        if blender_object.library:
+            library, file_extension = os.path.splitext(blender_object.library.filepath)
+            library = library + '/'
         if custom_file_name:
-            filename = write_dir + '/' + custom_file_name
+            filepath = write_dir + '/' + library + custom_file_name
         else:
-            filename = write_dir + '/' + name + ".mesh"
+            filepath = write_dir + '/' + library + name + ".mesh"
 
-        print('Exporting: ' + filename)
+        print('Exporting: ' + filepath)
         print(mesh_type)
 
         bm = bmesh.new()
@@ -134,7 +139,8 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
         bm.free()
         del bm
 
-        mesh_file = open(filename, 'bw')
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        mesh_file = open(filepath, 'bw')
 
         # Header
         mesh_file.write(struct.pack('i', len(positions)))

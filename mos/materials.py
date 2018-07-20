@@ -1,7 +1,7 @@
 import bpy
 import struct
 import json
-
+import os
 
 def get_linked_map(input_name, node):
     node_input = node.inputs.get(input_name)
@@ -49,7 +49,14 @@ def write(dir):
                     "roughness_map": roughness_map,
                     "ambient_occlusion_map": ambient_occlusion_map}
 
-        json_file = open(dir + '/' + blender_material.name + '.material', 'w')
+        library = ""
+        if blender_material.library:
+            library, file_extension = os.path.splitext(blender_material.library.filepath)
+            library = library + '/'
+
+        filepath = dir + '/' + library + blender_material.name + '.material'
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        json_file = open(filepath, 'w')
         json.dump(material, json_file)
         json_file.close()
         print("Wrote file: " + blender_material.name + ".material")
