@@ -17,9 +17,6 @@ def mesh_name(blender_object):
     return name.strip('/')
 
 
-def material_path(blender_object):
-
-
 def write_file(entity, directory):
     filepath = directory + '/' + entity["name"] + "." + entity["type"]
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
