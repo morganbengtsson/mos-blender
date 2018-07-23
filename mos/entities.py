@@ -8,17 +8,19 @@ from . import materials, meshes, light_data
 
 def mesh_name(blender_object):
     name = ""
-    if blender_object.library:
-        library, file_extension = os.path.splitext(blender_object.library.filepath)
+    if blender_object.data.library and not blender_object.library:
+        library, file_extension = os.path.splitext(blender_object.data.library.filepath)
         name += library + '/'
     name += blender_object.data.name
     for modifier in blender_object.modifiers:
         name += "_" + modifier.name
-    return name
+    return name.strip('/')
 
 
 def write_file(entity, directory):
-    entity_file = open(directory + '/' + entity["name"] + "." + entity["type"], 'w')
+    filepath = directory + '/' + entity["name"] + "." + entity["type"]
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    entity_file = open(filepath, 'w')
     entity_file.write(json.dumps(entity))
     entity_file.close()
 
@@ -102,7 +104,12 @@ def write_entity(blender_object, directory):
 def write(directory, objects):
     print("Writing entities/models.")
     for entity in objects:
-        write_entity(entity, directory)
+        directory0 = directory
+        library = ""
+        if entity.library:
+            library, file_extension = os.path.splitext(entity.library.filepath)
+            library = library + '/'
+        write_entity(entity, directory0 + library)
 
     print("Writing materials.")
     materials.write(directory)
