@@ -3,6 +3,7 @@ import struct
 import json
 import os
 
+
 def get_linked_map(input_name, node):
     node_input = node.inputs.get(input_name)
     linked_map = None
@@ -15,7 +16,6 @@ def write(dir):
     blender_materials = bpy.data.materials
 
     for blender_material in blender_materials:
-        print('Exporting: ' + blender_material.name)
         node = blender_material.node_tree.nodes.get("Material Output").inputs[0].links[0].from_node
 
         color_input = node.inputs.get("Color")
@@ -56,12 +56,10 @@ def write(dir):
 
         filepath = dir + '/' + library + blender_material.name + '.material'
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
+
+        print('Exporting: ' + filepath)
+
         json_file = open(filepath, 'w')
         json.dump(material, json_file)
         json_file.close()
-        print("Wrote file: " + blender_material.name + ".material")
-
-
-
-
 

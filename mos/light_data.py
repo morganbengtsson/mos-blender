@@ -6,7 +6,7 @@ def write(dir):
     blender_lamps = bpy.data.lamps
 
     for blender_lamp in blender_lamps:
-        print('Exporting: ' + blender_lamp.name)
+
 
         node = blender_lamp.node_tree.nodes.get("Emission")
         color_input = node.inputs.get("Color")
@@ -30,7 +30,7 @@ def write(dir):
 
         filepath = dir + '/' + library + blender_lamp.name + '.light_data'
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        print('Exporting: ' + filepath)
         json_file = open(filepath, 'w')
         json.dump(light, json_file)
         json_file.close()
-        print("Wrote file: " + blender_lamp.name + ".light_data")
