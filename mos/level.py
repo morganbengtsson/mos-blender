@@ -19,13 +19,7 @@ def write(dir, filepath, objects):
     level_file.write(json.dumps(root))
     level_file.close()
 
-    print("Writing models.")
+    print("Writing entities.")
     entities.write(dir, objects)
-    print("Writing materials.")
-    materials.write(dir)
-    print("Writing meshes.")
-    meshes.write(dir, objects)
-    print("Writing lamps.")
-    light_data.write(dir)
 
     return {'FINISHED'}
