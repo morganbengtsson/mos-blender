@@ -29,6 +29,19 @@ def round_2d(v):
     return round(v[0], 6), round(v[1], 6)
 
 
+def mesh_path(blender_object):
+    name = blender_object.data.name
+    for modifier in blender_object.modifiers:
+        name += "_" + modifier.name.lower()
+
+    library = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0] + '/'
+    if blender_object.data.library and not len(blender_object.modifiers) > 0:
+        library, file_extension = os.path.splitext(blender_object.data.library.filepath)
+        library = library + '/'
+    filepath = library + name + ".mesh"
+    return filepath.strip('/')
+
+
 def write_mesh_file(blender_object, write_dir):
     try:
         name = blender_object.data.name
