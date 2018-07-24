@@ -12,7 +12,16 @@ def get_linked_map(input_name, node):
     return linked_map
 
 
-def write(dir):
+def material_path(blender_material: bpy.types.Material):
+    library = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0] + '/'
+    if blender_material.library:
+        library, file_extension = os.path.splitext(blender_material.library.filepath)
+        library = library + '/'
+    path = library + blender_material.name + ".material"
+    return path.strip('/')
+
+
+def write(directory):
     blender_materials = bpy.data.materials
 
     for blender_material in blender_materials:
@@ -54,10 +63,10 @@ def write(dir):
             library, file_extension = os.path.splitext(blender_material.library.filepath)
             library = library + '/'
 
-        filepath = dir + '/' + library + blender_material.name + '.material'
+        filepath = directory + '/' + material_path(blender_material)
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
-        print('Exporting: ' + filepath)
+        print('Wrote: ' + filepath)
 
         json_file = open(filepath, 'w')
         json.dump(material, json_file)

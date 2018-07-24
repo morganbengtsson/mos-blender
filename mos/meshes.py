@@ -38,16 +38,12 @@ def mesh_path(blender_object):
     if blender_object.data.library and not len(blender_object.modifiers) > 0:
         library, file_extension = os.path.splitext(blender_object.data.library.filepath)
         library = library + '/'
-    filepath = library + name + ".mesh"
-    return filepath.strip('/')
+    path = library + name + ".mesh"
+    return path.strip('/')
 
 
 def write_mesh_file(blender_object, write_dir):
     try:
-        name = blender_object.data.name
-        for modifier in blender_object.modifiers:
-            name += "_" + modifier.name.lower()
-
         if len(blender_object.modifiers) > 0:
             mesh = blender_object.to_mesh(scene=bpy.context.scene,
                                           apply_modifiers=True,
@@ -60,13 +56,7 @@ def write_mesh_file(blender_object, write_dir):
         raise RuntimeError("Error in object " + blender_object.name)
 
     if mesh_type != "none":
-        library = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0] + '/'
-        if mesh.library:
-            library, file_extension = os.path.splitext(mesh.library.filepath)
-            library = library + '/'
-        filepath = write_dir + '/' + library + name + ".mesh"
-
-        print('Exporting: ' + filepath)
+        filepath = write_dir + '/' + mesh_path(blender_object)
 
         bm = bmesh.new()
         bm.from_mesh(mesh)
@@ -154,6 +144,7 @@ def write_mesh_file(blender_object, write_dir):
             mesh_file.write(struct.pack('I', i))
 
         mesh_file.close()
+        print('Wrote: ' + filepath)
 
 
 def write(write_dir, objects):
