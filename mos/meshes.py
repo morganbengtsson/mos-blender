@@ -33,7 +33,7 @@ def write_mesh_file(blender_object, write_dir):
     try:
         name = blender_object.data.name
         for modifier in blender_object.modifiers:
-            name += "_" + modifier.name
+            name += "_" + modifier.name.lower()
 
         if len(blender_object.modifiers) > 0:
             mesh = blender_object.to_mesh(scene=bpy.context.scene,
