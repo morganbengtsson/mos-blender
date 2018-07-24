@@ -12,9 +12,7 @@ def write(dir, filepath, objects):
     print("Writing level.")
     root = list()
     for blender_object in blender_objects:
-        t = "model" if blender_object.type in {"MESH", "EMPTY"} else "light" if blender_object.type == "LAMP" else "model"
-        extension = blender_object.get("entity_type") or t
-        root.append(str(blender_object.name) + "." + str(extension))
+        root.append(entities.entity_path(blender_object))
     level_file = open(filepath, 'w')
     level_file.write(json.dumps(root))
     level_file.close()

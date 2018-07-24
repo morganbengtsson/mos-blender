@@ -47,7 +47,7 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
         raise RuntimeError("Error in object " + blender_object.name)
 
     if mesh_type != "none":
-        library = bpy.path.basename(bpy.context.blend_data.filepath) + '/'
+        library = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0] + '/'
         if mesh.library:
             library, file_extension = os.path.splitext(mesh.library.filepath)
             library = library + '/'

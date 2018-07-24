@@ -49,7 +49,7 @@ def write(dir):
                     "roughness_map": roughness_map,
                     "ambient_occlusion_map": ambient_occlusion_map}
 
-        library = bpy.path.basename(bpy.context.blend_data.filepath) + '/'
+        library = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0] + '/'
         if blender_material.library:
             library, file_extension = os.path.splitext(blender_material.library.filepath)
             library = library + '/'

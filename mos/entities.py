@@ -101,15 +101,24 @@ def write_entity(blender_object, directory):
         return entity
 
 
+def entity_path(blender_object):
+    library = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0] + '/'
+    if blender_object.library:
+        library, file_extension = os.path.splitext(bpy.path.basename(blender_object.library.filepath))
+        library = library + '/'
+    t = "model" if blender_object.type in {"MESH", "EMPTY"} else "light" if blender_object.type == "LAMP" else "model"
+    extension = blender_object.get("entity_type") or t
+    return library + str(blender_object.name) + '.' + str(extension)
+
+
 def write(directory, objects):
     print("Writing entities/models.")
     for entity in objects:
-        directory0 = directory
-        library = ""
+        library = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0] + '/'
         if entity.library:
             library, file_extension = os.path.splitext(entity.library.filepath)
             library = library + '/'
-        write_entity(entity, directory0 + library)
+        write_entity(entity, directory + '/' + library)
 
     print("Writing materials.")
     materials.write(directory)
