@@ -31,9 +31,10 @@ def write(directory):
                  "size": float(spot_size),
                  "blend": float(spot_blend)}
 
-        filepath = directory + light_data_path(blender_lamp)
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
-        print('Exporting: ' + filepath)
-        json_file = open(filepath, 'w')
+        path = directory + light_data_path(blender_lamp)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        json_file = open(path, 'w')
         json.dump(light, json_file)
         json_file.close()
+        print('Wrote: ' + path)
+

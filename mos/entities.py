@@ -6,17 +6,6 @@ import os
 from . import materials, meshes, light_data
 
 
-def mesh_name(blender_object):
-    name = ""
-    if blender_object.data.library and not blender_object.library:
-        library, file_extension = os.path.splitext(blender_object.data.library.filepath)
-        name += library + '/'
-    name += blender_object.data.name
-    for modifier in blender_object.modifiers:
-        name += "_" + modifier.name
-    return name.strip('/')
-
-
 def write_file(entity, directory):
     filepath = directory + '/' + entity["name"] + "." + entity["type"]
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
@@ -94,7 +83,7 @@ def write_entity(blender_object, directory):
         for blender_child in blender_object.children:
             entity_child = write_entity(blender_child, directory)
             if entity_child:
-                entity["children"].append(file_name(entity_child))
+                entity["children"].append(entity_path(entity_child))
 
         write_file(entity, directory)
         return entity
@@ -107,17 +96,18 @@ def entity_path(blender_object):
         library = library + '/'
     t = "model" if blender_object.type in {"MESH", "EMPTY"} else "light" if blender_object.type == "LAMP" else "model"
     extension = blender_object.get("entity_type") or t
-    return library + str(blender_object.name) + '.' + str(extension)
+    return (library + str(blender_object.name) + '.' + str(extension)).strip('/')
 
 
 def write(directory, objects):
-    print("Writing entities/models.")
+    print("Writing entities.")
     for entity in objects:
-        library = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0] + '/'
+        path = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0] + '/'
         if entity.library:
-            library, file_extension = os.path.splitext(entity.library.filepath)
-            library = library + '/'
-        write_entity(entity, directory + '/' + library)
+            path, file_extension = os.path.splitext(entity.library.filepath)
+            path = path + '/'
+        write_entity(entity, directory + '/' + path)
+        print("Wrote: " + path)
 
     print("Writing materials.")
     materials.write(directory)

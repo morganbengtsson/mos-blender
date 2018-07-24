@@ -58,17 +58,12 @@ def write(directory):
                     "roughness_map": roughness_map,
                     "ambient_occlusion_map": ambient_occlusion_map}
 
-        library = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0] + '/'
-        if blender_material.library:
-            library, file_extension = os.path.splitext(blender_material.library.filepath)
-            library = library + '/'
-
         filepath = directory + '/' + material_path(blender_material)
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
-
-        print('Wrote: ' + filepath)
 
         json_file = open(filepath, 'w')
         json.dump(material, json_file)
         json_file.close()
+
+        print('Wrote: ' + filepath)
 
