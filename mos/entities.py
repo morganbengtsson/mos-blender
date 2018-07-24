@@ -106,6 +106,8 @@ def write(directory, objects):
         if entity.library:
             path, file_extension = os.path.splitext(entity.library.filepath)
             path = path + '/'
+        path.strip('/')
+        print(path)
         write_entity(entity, directory + '/' + path)
 
     materials.write(directory)
