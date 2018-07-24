@@ -22,6 +22,7 @@ def material_path(blender_material: bpy.types.Material):
 
 
 def write(directory):
+    print("Writing materials.")
     blender_materials = bpy.data.materials
 
     for blender_material in blender_materials:

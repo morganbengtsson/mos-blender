@@ -148,6 +148,7 @@ def write_mesh_file(blender_object, write_dir):
 
 
 def write(write_dir, objects):
+    print("Writing meshes.")
     objects = [o for o in objects if o.type == 'MESH']
 
     for blender_object in objects:

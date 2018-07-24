@@ -13,6 +13,7 @@ def light_data_path(blender_object):
 
 
 def write(directory):
+    print("Writing light data.")
     blender_lamps = bpy.data.lamps
 
     for blender_lamp in blender_lamps:

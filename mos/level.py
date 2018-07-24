@@ -16,8 +16,8 @@ def write(dir, filepath, objects):
     level_file = open(filepath, 'w')
     level_file.write(json.dumps(root))
     level_file.close()
+    print("Wrote: " + filepath)
 
-    print("Writing entities.")
     entities.write(dir, objects)
 
     return {'FINISHED'}

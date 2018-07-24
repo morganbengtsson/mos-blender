@@ -7,11 +7,12 @@ from . import materials, meshes, light_data
 
 
 def write_file(entity, directory):
-    filepath = directory + '/' + entity["name"] + "." + entity["type"]
-    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    entity_file = open(filepath, 'w')
+    path = directory + '/' + entity["name"] + "." + entity["type"]
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    entity_file = open(path, 'w')
     entity_file.write(json.dumps(entity))
     entity_file.close()
+    print("Wrote: " + path)
 
 
 def file_name(entity):
@@ -57,10 +58,9 @@ def write_entity(blender_object, directory):
         if group:
             for group_object in group.objects:
                 if not group_object.parent:
-                    print("group obj: " + group_object.name)
                     entity_child = write_entity(group_object, directory)
                     if entity_child:
-                        entity["children"].append(file_name(entity_child))
+                        entity["children"].append(entity_path(group_object))
 
         extension = "model" if blender_object.type in {"MESH", "EMPTY"} else "light" if blender_object.type == "LAMP" else "model"
 
@@ -83,7 +83,7 @@ def write_entity(blender_object, directory):
         for blender_child in blender_object.children:
             entity_child = write_entity(blender_child, directory)
             if entity_child:
-                entity["children"].append(entity_path(entity_child))
+                entity["children"].append(entity_path(blender_child))
 
         write_file(entity, directory)
         return entity
@@ -107,13 +107,7 @@ def write(directory, objects):
             path, file_extension = os.path.splitext(entity.library.filepath)
             path = path + '/'
         write_entity(entity, directory + '/' + path)
-        print("Wrote: " + path)
 
-    print("Writing materials.")
     materials.write(directory)
-
-    print("Writing meshes.")
     meshes.write(directory, bpy.data.objects)
-
-    print("Writing light data.")
     light_data.write(directory)
