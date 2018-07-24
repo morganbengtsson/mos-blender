@@ -6,8 +6,8 @@ import os
 from . import materials, meshes, light_data
 
 
-def write_file(entity, directory):
-    path = directory + '/' + entity["name"] + "." + entity["type"]
+def write_file(entity, directory, filepath):
+    path = directory + '/' + filepath
     os.makedirs(os.path.dirname(path), exist_ok=True)
     entity_file = open(path, 'w')
     entity_file.write(json.dumps(entity))
@@ -85,7 +85,7 @@ def write_entity(blender_object, directory):
             if entity_child:
                 entity["children"].append(entity_path(blender_child))
 
-        write_file(entity, directory)
+        write_file(entity, directory, entity_path(blender_object))
         return entity
 
 
@@ -107,8 +107,7 @@ def write(directory, objects):
             path, file_extension = os.path.splitext(entity.library.filepath)
             path = path + '/'
         path.strip('/')
-        print(path)
-        write_entity(entity, directory + '/' + path)
+        write_entity(entity, directory)
 
     materials.write(directory)
     meshes.write(directory, bpy.data.objects)
