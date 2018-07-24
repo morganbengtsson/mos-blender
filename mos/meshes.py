@@ -44,12 +44,9 @@ def mesh_path(blender_object):
 
 def write_mesh_file(blender_object, write_dir):
     try:
-        if len(blender_object.modifiers) > 0:
-            mesh = blender_object.to_mesh(scene=bpy.context.scene,
-                                          apply_modifiers=True,
-                                          settings='PREVIEW')
-        else:
-            mesh = blender_object.data
+        mesh = blender_object.to_mesh(scene=bpy.context.scene,
+                                      apply_modifiers=True,
+                                      settings='PREVIEW')
 
         mesh_type = blender_object.data.get("mesh_type")
     except:
@@ -119,7 +116,6 @@ def write_mesh_file(blender_object, write_dir):
                     faces.append([temp_faces[0], temp_faces[2], temp_faces[3]])
 
             indices = [val for sublist in faces for val in sublist]
-
         else:
             raise Exception(mesh.name + " must have one uv layer")
         bm.free()

@@ -4,11 +4,11 @@ import os
 
 
 def light_data_path(blender_object):
-    path = ""
+    library = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0] + '/'
     if blender_object.library:
-        path, file_extension = os.path.splitext(blender_object.library.filepath)
-        path = path + '/'
-    path += blender_object.name + '.light_data'
+        library, file_extension = os.path.splitext(blender_object.library.filepath)
+        library = library + '/'
+    path = library + blender_object.name + ".light_data"
     return path.strip('/')
 
 
@@ -32,7 +32,7 @@ def write(directory):
                  "size": float(spot_size),
                  "blend": float(spot_blend)}
 
-        path = directory + light_data_path(blender_lamp)
+        path = directory + '/' + light_data_path(blender_lamp)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         json_file = open(path, 'w')
         json.dump(light, json_file)
