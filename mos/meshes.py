@@ -29,7 +29,7 @@ def round_2d(v):
     return round(v[0], 6), round(v[1], 6)
 
 
-def write_mesh_file(blender_object, write_dir, custom_file_name=None):
+def write_mesh_file(blender_object, write_dir):
     try:
         name = blender_object.data.name
         for modifier in blender_object.modifiers:
@@ -51,10 +51,7 @@ def write_mesh_file(blender_object, write_dir, custom_file_name=None):
         if mesh.library:
             library, file_extension = os.path.splitext(mesh.library.filepath)
             library = library + '/'
-        if custom_file_name:
-            filepath = write_dir + '/' + library + custom_file_name
-        else:
-            filepath = write_dir + '/' + library + name + ".mesh"
+        filepath = write_dir + '/' + library + name + ".mesh"
 
         print('Exporting: ' + filepath)
 
