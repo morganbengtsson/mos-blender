@@ -48,8 +48,9 @@ def write_mesh_file(blender_object, write_dir):
                                       apply_modifiers=True,
                                       settings='PREVIEW')
 
-    except:
-        raise RuntimeError("Error in object " + blender_object.name)
+    except Exception as exception:
+        print("Error in object " + blender_object.name)
+        raise exception
 
     filepath = write_dir + '/' + mesh_path(blender_object)
 
