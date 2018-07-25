@@ -3,6 +3,7 @@ import struct
 import json
 import os
 from shutil import copyfile
+from . import common
 
 
 def copy_linked_map(input_name, directory, blender_material, node):
