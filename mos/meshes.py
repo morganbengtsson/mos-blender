@@ -38,7 +38,7 @@ def mesh_path(blender_object):
     if blender_object.data.library and not len(blender_object.modifiers) > 0:
         library, file_extension = os.path.splitext(blender_object.data.library.filepath)
         library = library + '/'
-    path = library + name + ".mesh"
+    path = library + "meshes/" + name + ".mesh"
     return path.strip('/')
 
 

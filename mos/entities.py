@@ -89,7 +89,7 @@ def write_entity(blender_object, directory):
 def entity_path(blender_object):
     t = "model" if blender_object.type in {"MESH", "EMPTY"} else "light" if blender_object.type == "LAMP" else "model"
     extension = blender_object.get("entity_type") or t
-    return (library_path(blender_object) + str(blender_object.name) + '.' + str(extension)).strip('/')
+    return (library_path(blender_object) + "entities/" + str(blender_object.name) + '.' + str(extension)).strip('/')
 
 
 def write(directory, objects):

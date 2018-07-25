@@ -19,7 +19,7 @@ def copy_linked_map(input_name, directory, blender_material, node):
 
 
 def material_path(blender_material: bpy.types.Material):
-    path = library_path(blender_material) + blender_material.name + ".material"
+    path = library_path(blender_material) + "materials/" + blender_material.name + ".material"
     return path.strip('/')
 
 
