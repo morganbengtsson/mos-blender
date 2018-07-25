@@ -1,36 +1,25 @@
 import bpy
-import struct
 import json
-import os
 from shutil import copyfile
-from . import common
+from .common import *
 
 
 def copy_linked_map(input_name, directory, blender_material, node):
     node_input = node.inputs.get(input_name)
-    path = None
+    filepath = None
     if node_input.is_linked:
         image = node_input.links[0].from_node.image
-        linked_map = image.name
-        source_path = bpy.path.abspath(image.filepath, library=image.library)
-
-        library = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0] + '/'
-        if blender_material.library:
-            library, file_extension = os.path.splitext(blender_material.library.filepath)
-            library = library + '/'
-        path = library + "textures/" + linked_map
-        full_path = directory + '/' + path
-        os.makedirs(os.path.dirname(full_path), exist_ok=True)
-        copyfile(source_path, full_path)
-    return path
+        filename = image.name
+        source_filepath = bpy.path.abspath(image.filepath, library=image.library)
+        filepath = library_path(blender_material) + "textures/" + filename
+        full_filepath = directory + '/' + filepath
+        os.makedirs(os.path.dirname(full_filepath), exist_ok=True)
+        copyfile(source_filepath, full_filepath)
+    return filepath
 
 
 def material_path(blender_material: bpy.types.Material):
-    library = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0] + '/'
-    if blender_material.library:
-        library, file_extension = os.path.splitext(blender_material.library.filepath)
-        library = library + '/'
-    path = library + blender_material.name + ".material"
+    path = library_path(blender_material) + blender_material.name + ".material"
     return path.strip('/')
 
 
@@ -46,7 +35,7 @@ def write(directory):
         albedo = (0.0, 0.0, 0.0) if not color_input.default_value[:3] else color_input.default_value[:3]
 
         emission_input = node.inputs.get("Emission")
-        emission_map = copy_linked_map("Emission",directory, blender_material, node)
+        emission_map = copy_linked_map("Emission", directory, blender_material, node)
         emission = (0.0, 0.0, 0.0) if not emission_input.default_value[:3] else emission_input.default_value[:3]
 
         normal_map = copy_linked_map("Normal", directory, blender_material, node)
@@ -72,12 +61,12 @@ def write(directory):
                     "roughness_map": roughness_map,
                     "ambient_occlusion_map": ambient_occlusion_map}
 
-        filepath = directory + '/' + material_path(blender_material)
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        path = directory + '/' + material_path(blender_material)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
 
-        json_file = open(filepath, 'w')
+        json_file = open(path, 'w')
         json.dump(material, json_file)
         json_file.close()
 
-        print('Wrote: ' + filepath)
+        print('Wrote: ' + path)
 
