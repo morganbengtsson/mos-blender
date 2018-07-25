@@ -29,10 +29,20 @@ class ExportLevelFormat(bpy.types.Operator, ExportHelper):
 
 class ExportEntitiesFormat(bpy.types.Operator, ExportHelper):
     bl_idname = "export_entities.entity"
-    bl_label = "Export MOS entities"
+    bl_label = "Export MOS entities/assets"
     bl_options = {'PRESET'}
     filename_ext = "."
-    use_filter_folder = True
+    use_filter_folder = False
+    use_filter = True
+    filter_glob = StringProperty(
+        default="",
+        options={'HIDDEN'},
+    )
+
+    def invoke(self, context, event):
+        self.filepath = ""
+        context.window_manager.fileselect_add(self)
+        return {'RUNNING_MODAL'}
 
     def execute(self, context):
         blender_objects = [o for o in context.scene.objects]
