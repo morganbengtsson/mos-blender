@@ -48,59 +48,46 @@ def write_mesh_file(blender_object, write_dir):
                                       apply_modifiers=True,
                                       settings='PREVIEW')
 
-        mesh_type = blender_object.data.get("mesh_type")
     except:
         raise RuntimeError("Error in object " + blender_object.name)
 
-    if mesh_type != "none":
-        filepath = write_dir + '/' + mesh_path(blender_object)
+    filepath = write_dir + '/' + mesh_path(blender_object)
 
-        bm = bmesh.new()
-        bm.from_mesh(mesh)
+    bm = bmesh.new()
+    bm.from_mesh(mesh)
 
-        bmesh.ops.triangulate(bm, faces=bm.faces, quad_method=2)
+    bmesh.ops.triangulate(bm, faces=bm.faces, quad_method=2)
 
-        positions = []
-        normals = []
-        tangents = []
-        texture_uvs = []
-        aos = []
+    positions = []
+    normals = []
+    tangents = []
+    texture_uvs = []
+    aos = []
 
-        faces = []
-        vertex_dict = {}
-        vertex_count = 0
+    faces = []
+    vertex_dict = {}
+    vertex_count = 0
 
-        if len(mesh.uv_layers) >= 1:
-            for i, f in enumerate(mesh.tessfaces):
-                temp_faces = []
-                for j, v in enumerate(f.vertices):
-                    position = round_3d(mesh.vertices[v].co.to_tuple())
-                    if f.use_smooth:
-                        normal = round_3d(mesh.vertices[v].normal)
-                    else:
-                        normal = round_3d(f.normal.to_tuple())
-                    texture_uv = list(round_2d(mesh.tessface_uv_textures[0].data[i].uv[j][0:2]))
-                    texture_uv[1] = 1.0 - texture_uv[1]
-                    texture_uv = tuple(texture_uv) #TODO: Not nice
-                    ao = 1.0
+    if len(mesh.uv_layers) >= 1:
+        for i, f in enumerate(mesh.tessfaces):
+            temp_faces = []
+            for j, v in enumerate(f.vertices):
+                position = round_3d(mesh.vertices[v].co.to_tuple())
+                if f.use_smooth:
+                    normal = round_3d(mesh.vertices[v].normal)
+                else:
+                    normal = round_3d(f.normal.to_tuple())
+                texture_uv = list(round_2d(mesh.tessface_uv_textures[0].data[i].uv[j][0:2]))
+                texture_uv[1] = 1.0 - texture_uv[1]
+                texture_uv = tuple(texture_uv) #TODO: Not nice
+                ao = 1.0
 
-                    key = mesh.vertices[v].index
-                    vertex_index = vertex_dict.get(key)
+                key = mesh.vertices[v].index
+                vertex_index = vertex_dict.get(key)
 
-                    if blender_object.data.polygons[0].use_smooth :
-                        if vertex_index is None:  # vertex not found
-                            vertex_dict[key] = vertex_count
-                            positions.append(position)
-                            normals.append(normal)
-                            texture_uvs.append(texture_uv)
-                            temp_faces.append(vertex_count)
-                            tangents.append((0.0, 0.0, 0.0))
-                            aos.append(ao)
-                            vertex_count += 1
-                        else:
-                            inx = vertex_dict[key]
-                            temp_faces.append(inx)
-                    else:
+                if blender_object.data.polygons[0].use_smooth :
+                    if vertex_index is None:  # vertex not found
+                        vertex_dict[key] = vertex_count
                         positions.append(position)
                         normals.append(normal)
                         texture_uvs.append(texture_uv)
@@ -108,39 +95,50 @@ def write_mesh_file(blender_object, write_dir):
                         tangents.append((0.0, 0.0, 0.0))
                         aos.append(ao)
                         vertex_count += 1
-
-                if len(temp_faces) == 3:
-                    faces.append(temp_faces)
+                    else:
+                        inx = vertex_dict[key]
+                        temp_faces.append(inx)
                 else:
-                    faces.append([temp_faces[0], temp_faces[1], temp_faces[2]])
-                    faces.append([temp_faces[0], temp_faces[2], temp_faces[3]])
+                    positions.append(position)
+                    normals.append(normal)
+                    texture_uvs.append(texture_uv)
+                    temp_faces.append(vertex_count)
+                    tangents.append((0.0, 0.0, 0.0))
+                    aos.append(ao)
+                    vertex_count += 1
 
-            indices = [val for sublist in faces for val in sublist]
-        else:
-            raise Exception(mesh.name + " must have one uv layer")
-        bm.free()
-        del bm
+            if len(temp_faces) == 3:
+                faces.append(temp_faces)
+            else:
+                faces.append([temp_faces[0], temp_faces[1], temp_faces[2]])
+                faces.append([temp_faces[0], temp_faces[2], temp_faces[3]])
 
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
-        mesh_file = open(filepath, 'bw')
+        indices = [val for sublist in faces for val in sublist]
+    else:
+        raise Exception(mesh.name + " must have one uv layer")
+    bm.free()
+    del bm
 
-        # Header
-        mesh_file.write(struct.pack('i', len(positions)))
-        mesh_file.write(struct.pack('i', len(indices)))
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    mesh_file = open(filepath, 'bw')
 
-        # Body
-        for v in zip(positions, normals, tangents, texture_uvs, aos):
-            mesh_file.write(struct.pack('fff', *v[0]))
-            mesh_file.write(struct.pack('fff', *v[1]))
-            mesh_file.write(struct.pack('fff', *v[2]))
-            mesh_file.write(struct.pack('ff', *v[3]))
-            mesh_file.write(struct.pack('f', v[4]))
+    # Header
+    mesh_file.write(struct.pack('i', len(positions)))
+    mesh_file.write(struct.pack('i', len(indices)))
 
-        for i in indices:
-            mesh_file.write(struct.pack('I', i))
+    # Body
+    for v in zip(positions, normals, tangents, texture_uvs, aos):
+        mesh_file.write(struct.pack('fff', *v[0]))
+        mesh_file.write(struct.pack('fff', *v[1]))
+        mesh_file.write(struct.pack('fff', *v[2]))
+        mesh_file.write(struct.pack('ff', *v[3]))
+        mesh_file.write(struct.pack('f', v[4]))
 
-        mesh_file.close()
-        print('Wrote: ' + filepath)
+    for i in indices:
+        mesh_file.write(struct.pack('I', i))
+
+    mesh_file.close()
+    print('Wrote: ' + filepath)
 
 
 def write(write_dir, objects):
