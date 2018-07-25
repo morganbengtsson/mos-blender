@@ -15,10 +15,6 @@ def write_file(entity, directory, filepath):
     print("Wrote: " + path)
 
 
-def file_name(entity):
-    return str(entity["name"] + "." + str(entity["type"]))
-
-
 def write_entity(blender_object, directory):
     if blender_object.type not in {"MESH", "EMPTY", "LAMP"}:
         print("Not supported")
