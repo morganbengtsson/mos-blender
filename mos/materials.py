@@ -2,14 +2,26 @@ import bpy
 import struct
 import json
 import os
+from shutil import copyfile
 
 
-def get_linked_map(input_name, node):
+def copy_linked_map(input_name, directory, blender_material, node):
     node_input = node.inputs.get(input_name)
-    linked_map = None
+    path = None
     if node_input.is_linked:
-        linked_map = node_input.links[0].from_node.image.name
-    return linked_map
+        image = node_input.links[0].from_node.image
+        linked_map = image.name
+        source_path = bpy.path.abspath(image.filepath, library=image.library)
+
+        library = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0] + '/'
+        if blender_material.library:
+            library, file_extension = os.path.splitext(blender_material.library.filepath)
+            library = library + '/'
+        path = library + "textures/" + linked_map
+        full_path = directory + '/' + path
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
+        copyfile(source_path, full_path)
+    return path
 
 
 def material_path(blender_material: bpy.types.Material):
@@ -29,17 +41,17 @@ def write(directory):
         node = blender_material.node_tree.nodes.get("Material Output").inputs[0].links[0].from_node
 
         color_input = node.inputs.get("Color")
-        albedo_map = get_linked_map("Color", node)
+        albedo_map = copy_linked_map("Color", directory, blender_material, node)
         albedo = (0.0, 0.0, 0.0) if not color_input.default_value[:3] else color_input.default_value[:3]
 
         emission_input = node.inputs.get("Emission")
-        emission_map = get_linked_map("Emission", node)
+        emission_map = copy_linked_map("Emission",directory, blender_material, node)
         emission = (0.0, 0.0, 0.0) if not emission_input.default_value[:3] else emission_input.default_value[:3]
 
-        normal_map = get_linked_map("Normal", node)
-        metallic_map = get_linked_map("Metallic", node)
-        roughness_map = get_linked_map("Roughness", node)
-        ambient_occlusion_map = get_linked_map("Ambient occlusion", node)
+        normal_map = copy_linked_map("Normal", directory, blender_material, node)
+        metallic_map = copy_linked_map("Metallic", directory, blender_material, node)
+        roughness_map = copy_linked_map("Roughness", directory, blender_material, node)
+        ambient_occlusion_map = copy_linked_map("Ambient occlusion", directory, blender_material, node)
 
         roughness = node.inputs.get("Roughness").default_value
         metallic = node.inputs.get("Metallic").default_value
