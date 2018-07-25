@@ -4,6 +4,7 @@ import idprop
 import os
 
 from . import materials, meshes, light_data
+from .common import *
 
 
 def write_file(entity, directory, filepath):
@@ -86,23 +87,14 @@ def write_entity(blender_object, directory):
 
 
 def entity_path(blender_object):
-    library = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0] + '/'
-    if blender_object.library:
-        library, file_extension = os.path.splitext(bpy.path.basename(blender_object.library.filepath))
-        library = library + '/'
     t = "model" if blender_object.type in {"MESH", "EMPTY"} else "light" if blender_object.type == "LAMP" else "model"
     extension = blender_object.get("entity_type") or t
-    return (library + str(blender_object.name) + '.' + str(extension)).strip('/')
+    return (library_path(blender_object) + str(blender_object.name) + '.' + str(extension)).strip('/')
 
 
 def write(directory, objects):
     print("Writing entities.")
     for entity in objects:
-        path = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0] + '/'
-        if entity.library:
-            path, file_extension = os.path.splitext(entity.library.filepath)
-            path = path + '/'
-        path.strip('/')
         write_entity(entity, directory)
 
     materials.write(directory)

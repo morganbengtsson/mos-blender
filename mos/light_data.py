@@ -1,14 +1,10 @@
 import bpy
 import json
-import os
+from .common import *
 
 
 def light_data_path(blender_object):
-    library = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0] + '/'
-    if blender_object.library:
-        library, file_extension = os.path.splitext(blender_object.library.filepath)
-        library = library + '/'
-    path = library + blender_object.name + ".light_data"
+    path = library_path(blender_object) + blender_object.name + ".light_data"
     return path.strip('/')
 
 
