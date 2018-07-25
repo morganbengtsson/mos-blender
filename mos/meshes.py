@@ -63,7 +63,7 @@ def write_mesh_file(blender_object, write_dir):
     normals = []
     tangents = []
     texture_uvs = []
-    aos = []
+    weights = []
 
     faces = []
     vertex_dict = {}
@@ -81,7 +81,7 @@ def write_mesh_file(blender_object, write_dir):
                 texture_uv = list(round_2d(mesh.tessface_uv_textures[0].data[i].uv[j][0:2]))
                 texture_uv[1] = 1.0 - texture_uv[1]
                 texture_uv = tuple(texture_uv) #TODO: Not nice
-                ao = 1.0
+                weight = mesh.vertices[v].bevel_weight;
 
                 key = mesh.vertices[v].index
                 vertex_index = vertex_dict.get(key)
@@ -94,7 +94,7 @@ def write_mesh_file(blender_object, write_dir):
                         texture_uvs.append(texture_uv)
                         temp_faces.append(vertex_count)
                         tangents.append((0.0, 0.0, 0.0))
-                        aos.append(ao)
+                        weights.append(weight)
                         vertex_count += 1
                     else:
                         inx = vertex_dict[key]
@@ -105,7 +105,7 @@ def write_mesh_file(blender_object, write_dir):
                     texture_uvs.append(texture_uv)
                     temp_faces.append(vertex_count)
                     tangents.append((0.0, 0.0, 0.0))
-                    aos.append(ao)
+                    weights.append(weight)
                     vertex_count += 1
 
             if len(temp_faces) == 3:
@@ -128,7 +128,7 @@ def write_mesh_file(blender_object, write_dir):
     mesh_file.write(struct.pack('i', len(indices)))
 
     # Body
-    for v in zip(positions, normals, tangents, texture_uvs, aos):
+    for v in zip(positions, normals, tangents, texture_uvs, weights):
         mesh_file.write(struct.pack('fff', *v[0]))
         mesh_file.write(struct.pack('fff', *v[1]))
         mesh_file.write(struct.pack('fff', *v[2]))
