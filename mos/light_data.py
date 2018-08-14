@@ -4,7 +4,7 @@ from .common import *
 
 
 def light_data_path(blender_object):
-    path = library_path(blender_object) + "light_data/" + blender_object.data.name + ".light_data"
+    path = library_path(blender_object) + "light_data/" + blender_object.name + ".light_data"
     return path.strip('/')
 
 

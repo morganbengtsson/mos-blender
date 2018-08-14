@@ -31,6 +31,8 @@ def round_2d(v):
 
 def mesh_path(blender_object):
     name = blender_object.data.name
+    if len(blender_object.modifiers) > 0:
+        name = blender_object.name
     for modifier in blender_object.modifiers:
         name += "_" + modifier.name.lower()
 

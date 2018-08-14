@@ -72,7 +72,7 @@ def write_entity(blender_object, directory):
             entity["mesh"] = meshes.mesh_path(blender_object)
 
         if blender_object.type == "LAMP":
-            entity["light"] = light_data.light_data_path(blender_object)
+            entity["light"] = light_data.light_data_path(blender_object.data)
 
         if blender_object.active_material:
             entity["material"] = materials.material_path(blender_object.active_material)
