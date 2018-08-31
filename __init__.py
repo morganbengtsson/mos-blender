@@ -23,7 +23,7 @@ class ExportLevelFormat(bpy.types.Operator, ExportHelper):
     filename_ext = ".level"
 
     def execute(self, context):
-        level.write(os.path.dirname(self.filepath), self.filepath, context.scene.objects)
+        level.write(os.path.dirname(self.filepath), self.filepath, context.scene)
         return {'FINISHED'}
 
 

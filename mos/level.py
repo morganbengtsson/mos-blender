@@ -5,11 +5,12 @@ import json
 from . import materials, entities, meshes, light_data
 
 
-def write(dir, filepath, objects):
+def write(dir, filepath, scene):
+    objects = scene.objects
     blender_objects = [o for o in objects if not o.parent and o.type in {"MESH", "EMPTY", "LAMP"}]
     blender_objects = sorted(blender_objects, key=lambda x: x.name, reverse=False)
 
-    print("Writing level.")
+    print("Writing level " + scene.name)
     root = list()
     for blender_object in blender_objects:
         root.append(entities.entity_path(blender_object))
