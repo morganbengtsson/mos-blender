@@ -28,11 +28,12 @@ def write(directory):
     blender_materials = bpy.data.materials
 
     for blender_material in blender_materials:
+        print("Writing material " + blender_material.name)
         node = blender_material.node_tree.nodes.get("Material Output").inputs[0].links[0].from_node
 
-        color_input = node.inputs.get("Color")
-        albedo_map = copy_linked_map("Color", directory, blender_material, node)
-        albedo = (0.0, 0.0, 0.0) if not color_input.default_value[:3] else color_input.default_value[:3]
+        albedo_input = node.inputs.get("Albedo")
+        albedo_map = copy_linked_map("Albedo", directory, blender_material, node)
+        albedo = (0.0, 0.0, 0.0) if not albedo_input.default_value[:3] else albedo_input.default_value[:3]
 
         emission_input = node.inputs.get("Emission")
         emission_map = copy_linked_map("Emission", directory, blender_material, node)
@@ -45,11 +46,13 @@ def write(directory):
 
         roughness = node.inputs.get("Roughness").default_value
         metallic = node.inputs.get("Metallic").default_value
+        strength = node.inputs.get("Strength").default_value
         opacity = node.inputs.get("Opacity").default_value
         ambient_occlusion = node.inputs.get("Ambient occlusion").default_value
 
         material = {"albedo": tuple(albedo),
                     "opacity": opacity,
+                    "strength": float(strength),
                     "roughness": float(roughness),
                     "metallic": float(metallic),
                     "emission": tuple(emission),
