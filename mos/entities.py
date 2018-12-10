@@ -53,7 +53,7 @@ def write_entity(blender_object, directory):
 
         group = blender_object.dupli_group
         if group:
-            for group_object in group.objects:
+            for group_object in sorted(group.objects, key=lambda x: x.name):
                 if not group_object.parent:
                     entity_child = write_entity(group_object, directory)
                     if entity_child:
@@ -77,7 +77,7 @@ def write_entity(blender_object, directory):
         if blender_object.active_material:
             entity["material"] = materials.material_path(blender_object.active_material)
 
-        for blender_child in blender_object.children:
+        for blender_child in sorted(blender_object.children, key=lambda x: x.name):
             entity_child = write_entity(blender_child, directory)
             if entity_child:
                 entity["children"].append(entity_path(blender_child))
@@ -94,7 +94,7 @@ def entity_path(blender_object):
 
 def write(directory, objects):
     print("Writing entities.")
-    for entity in objects:
+    for entity in sorted(objects, key=lambda x: x.name):
         write_entity(entity, directory)
 
     materials.write(directory)
