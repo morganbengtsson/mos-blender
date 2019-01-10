@@ -3,7 +3,7 @@ import bpy
 import idprop
 import os
 
-from . import materials, meshes, light_data
+from . import materials, meshes, light_data, speakers
 from .common import *
 
 
@@ -78,6 +78,9 @@ def write_entity(blender_object, directory):
         if blender_object.type == "LAMP":
             entity["light"] = light_data.light_data_path(blender_object.data)
 
+        if blender_object.type == "SPEAKER":
+                entity["speaker"] = speakers.speaker_data_path(blender_object.data)
+
         if blender_object.active_material:
             entity["material"] = materials.material_path(blender_object.active_material)
 
@@ -104,3 +107,4 @@ def write(directory, objects):
     materials.write(directory)
     meshes.write(directory, bpy.data.objects)
     light_data.write(directory)
+    speakers.write(directory)
