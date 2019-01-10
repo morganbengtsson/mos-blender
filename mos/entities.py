@@ -7,6 +7,10 @@ from . import materials, meshes, light_data
 from .common import *
 
 
+def get_type(blender_type):
+    return "model" if blender_type in {"MESH", "EMPTY"} else "light" if blender_type == "LAMP" else "model"
+
+
 def write_file(entity, directory, filepath):
     path = directory + '/' + filepath
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -59,7 +63,7 @@ def write_entity(blender_object, directory):
                     if entity_child:
                         entity["children"].append(entity_path(group_object))
 
-        extension = "model" if blender_object.type in {"MESH", "EMPTY"} else "light" if blender_object.type == "LAMP" else "model"
+        extension = get_type(blender_object.type)
 
         entity["type"] = blender_object.get("entity_type") or extension
 
@@ -87,7 +91,7 @@ def write_entity(blender_object, directory):
 
 
 def entity_path(blender_object):
-    t = "model" if blender_object.type in {"MESH", "EMPTY"} else "light" if blender_object.type == "LAMP" else "model"
+    t = get_type(blender_object.type)
     extension = blender_object.get("entity_type") or t
     return (library_path(blender_object) + "entities/" + str(blender_object.name) + '.' + str(extension)).strip('/')
 
