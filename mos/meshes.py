@@ -88,7 +88,7 @@ def write_mesh_file(blender_object, write_dir):
                 key = mesh.vertices[v].index
                 vertex_index = vertex_dict.get(key)
 
-                if blender_object.data.polygons[0].use_smooth :
+                if f.use_smooth:
                     if vertex_index is None:  # vertex not found
                         vertex_dict[key] = vertex_count
                         positions.append(position)
