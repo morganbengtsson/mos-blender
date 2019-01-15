@@ -32,6 +32,7 @@ def write_entity(blender_object, directory):
                           0, 0, 0, 1]
         entity["mesh"] = None
         entity["material"] = None
+        entity["speaker"] = None
         entity["children"] = list()
         entity["type"] = "model"
         entity["id"] = None
@@ -79,7 +80,7 @@ def write_entity(blender_object, directory):
             entity["light"] = light_data.light_data_path(blender_object.data)
 
         if blender_object.type == "SPEAKER":
-                entity["speaker"] = speakers.speaker_data_path(blender_object.data)
+            entity["speaker"] = speakers.speaker_data_path(blender_object.data)
 
         if blender_object.active_material:
             entity["material"] = materials.material_path(blender_object.active_material)
