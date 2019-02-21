@@ -48,10 +48,12 @@ def write(directory):
         metallic = node.inputs.get("Metallic").default_value
         strength = node.inputs.get("Strength").default_value
         opacity = node.inputs.get("Opacity").default_value
+        transmission = node.inputs.get("Transmission").default_value
         ambient_occlusion = node.inputs.get("Ambient occlusion").default_value
 
         material = {"albedo": tuple(albedo),
                     "opacity": opacity,
+                    "transmission": transmission,
                     "strength": float(strength),
                     "roughness": float(roughness),
                     "metallic": float(metallic),
