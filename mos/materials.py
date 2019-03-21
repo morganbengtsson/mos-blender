@@ -6,6 +6,8 @@ from .common import *
 
 def copy_linked_map(input_name, directory, blender_material, node):
     node_input = node.inputs.get(input_name)
+    if not node_input:
+        return None
     filepath = None
     if node_input.is_linked:
         image = node_input.links[0].from_node.image
@@ -31,13 +33,13 @@ def write(directory):
         print("Writing material " + blender_material.name)
         node = blender_material.node_tree.nodes.get("Material Output").inputs[0].links[0].from_node
 
-        albedo_input = node.inputs.get("Albedo")
-        albedo_map = copy_linked_map("Albedo", directory, blender_material, node)
+        albedo_input = node.inputs.get("Base Color")
+        albedo_map = copy_linked_map("Base Color", directory, blender_material, node)
         albedo = (0.0, 0.0, 0.0) if not albedo_input.default_value[:3] else albedo_input.default_value[:3]
 
         emission_input = node.inputs.get("Emission")
         emission_map = copy_linked_map("Emission", directory, blender_material, node)
-        emission = (0.0, 0.0, 0.0) if not emission_input.default_value[:3] else emission_input.default_value[:3]
+        emission = (0.0, 0.0, 0.0) if not emission_input or not emission_input.default_value[:3] else emission_input.default_value[:3]
 
         normal_map = copy_linked_map("Normal", directory, blender_material, node)
         metallic_map = copy_linked_map("Metallic", directory, blender_material, node)
@@ -46,10 +48,18 @@ def write(directory):
 
         roughness = node.inputs.get("Roughness").default_value
         metallic = node.inputs.get("Metallic").default_value
-        strength = node.inputs.get("Strength").default_value
-        opacity = node.inputs.get("Opacity").default_value
+
+        strength_node = node.inputs.get("Strength")
+        strength = strength_node.default_value if strength_node else 1.0
+
+        opacity_node = node.inputs.get("Opacity")
+        opacity = opacity_node.default_value if opacity_node else 1.0
+
         transmission = node.inputs.get("Transmission").default_value
-        ambient_occlusion = node.inputs.get("Ambient occlusion").default_value
+
+        #TODO: Remove ao value
+        ambient_occlusion_input = node.inputs.get("Ambient occlusion")
+        ambient_occlusion = ambient_occlusion_input.default_value if ambient_occlusion_input else 1.0
 
         material = {"albedo": tuple(albedo),
                     "opacity": opacity,
