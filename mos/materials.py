@@ -37,10 +37,6 @@ def write(directory):
         albedo_map = copy_linked_map("Base Color", directory, blender_material, node)
         albedo = (0.0, 0.0, 0.0) if not albedo_input.default_value[:3] else albedo_input.default_value[:3]
 
-        emission_input = node.inputs.get("Emission")
-        emission_map = copy_linked_map("Emission", directory, blender_material, node)
-        emission = (0.0, 0.0, 0.0) if not emission_input or not emission_input.default_value[:3] else emission_input.default_value[:3]
-
         normal_map = copy_linked_map("Normal", directory, blender_material, node)
         metallic_map = copy_linked_map("Metallic", directory, blender_material, node)
         roughness_map = copy_linked_map("Roughness", directory, blender_material, node)
@@ -55,9 +51,11 @@ def write(directory):
         opacity_node = node.inputs.get("Opacity")
         opacity = opacity_node.default_value if opacity_node else 1.0
 
+        emission_node = node.inputs.get("Emission")
+        emission = emission_node.default_value if emission_node else 0.0
+
         transmission = node.inputs.get("Transmission").default_value
 
-        #TODO: Remove ao value
         ambient_occlusion_input = node.inputs.get("Ambient occlusion")
         ambient_occlusion = ambient_occlusion_input.default_value if ambient_occlusion_input else 1.0
 
@@ -67,10 +65,9 @@ def write(directory):
                     "strength": float(strength),
                     "roughness": float(roughness),
                     "metallic": float(metallic),
-                    "emission": tuple(emission),
+                    "emission": float(emission),
                     "ambient_occlusion": float(ambient_occlusion),
                     "albedo_map": albedo_map,
-                    "emission_map": emission_map,
                     "normal_map": normal_map,
                     "metallic_map": metallic_map,
                     "roughness_map": roughness_map,
