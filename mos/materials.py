@@ -45,9 +45,6 @@ def write(directory):
         roughness = node.inputs.get("Roughness").default_value
         metallic = node.inputs.get("Metallic").default_value
 
-        strength_node = node.inputs.get("Strength")
-        strength = strength_node.default_value if strength_node else 1.0
-
         opacity_node = node.inputs.get("Opacity")
         opacity = opacity_node.default_value if opacity_node else 1.0
 
@@ -62,7 +59,6 @@ def write(directory):
         material = {"albedo": tuple(albedo),
                     "opacity": opacity,
                     "transmission": transmission,
-                    "strength": float(strength),
                     "roughness": float(roughness),
                     "metallic": float(metallic),
                     "emission": float(emission),
