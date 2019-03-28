@@ -56,7 +56,9 @@ def write_entity(blender_object, directory):
 
         entity["transform"] = transform
 
-        group = blender_object.dupli_group
+        # group = blender_object.dupli_group
+        # TODO: Rename group
+        group = blender_object.instance_collection
         if group:
             for group_object in sorted(group.objects, key=lambda x: x.name):
                 if not group_object.parent:
