@@ -7,7 +7,7 @@ from . import materials, entities, meshes, light_data
 
 def write(dir, filepath, scene):
     objects = scene.objects
-    blender_objects = [o for o in objects if not o.parent and o.type in {"MESH", "EMPTY", "LAMP"}]
+    blender_objects = [o for o in objects if not o.parent and o.type in {"MESH", "EMPTY", "LIGHT"}]
     blender_objects = sorted(blender_objects, key=lambda x: x.name, reverse=False)
 
     print("Writing level " + scene.name)

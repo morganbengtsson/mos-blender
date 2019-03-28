@@ -8,7 +8,7 @@ from .common import *
 
 
 def get_type(blender_type):
-    return "model" if blender_type in {"MESH", "EMPTY"} else "light" if blender_type == "LAMP" else "speaker" if blender_type == "SPEAKER" else "model"
+    return "model" if blender_type in {"MESH", "EMPTY"} else "light" if blender_type == "LIGHT" else "speaker" if blender_type == "SPEAKER" else "model"
 
 
 def write_file(entity, directory, filepath):
@@ -21,7 +21,7 @@ def write_file(entity, directory, filepath):
 
 
 def write_entity(blender_object, directory):
-    if blender_object.type not in {"MESH", "EMPTY", "LAMP", "SPEAKER"}:
+    if blender_object.type not in {"MESH", "EMPTY", "LIGHT", "SPEAKER"}:
         print("Not supported")
     else:
         entity = dict()
@@ -78,7 +78,7 @@ def write_entity(blender_object, directory):
         if blender_object.type == "MESH":
             entity["mesh"] = meshes.mesh_path(blender_object)
 
-        if blender_object.type == "LAMP":
+        if blender_object.type == "LIGHT":
             entity["light"] = light_data.light_data_path(blender_object.data)
 
         if blender_object.type == "SPEAKER":
