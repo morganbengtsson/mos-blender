@@ -10,7 +10,7 @@ def light_data_path(blender_object):
 
 def write(directory):
     print("Writing light data.")
-    blender_lamps = bpy.data.lamps
+    blender_lamps = bpy.data.lights
 
     for blender_lamp in blender_lamps:
         node = blender_lamp.node_tree.nodes.get("Emission")

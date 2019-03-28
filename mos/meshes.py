@@ -71,7 +71,8 @@ def write_mesh_file(blender_object, write_dir):
     vertex_count = 0
 
     if len(mesh.uv_layers) >= 1:
-        for i, f in enumerate(mesh.tessfaces):
+        # for i, f in enumerate(mesh.tessfaces):
+        for i, f in enumerate(mesh.loop_triangles):
             temp_faces = []
             for j, v in enumerate(f.vertices):
                 position = round_3d(mesh.vertices[v].co.to_tuple())
