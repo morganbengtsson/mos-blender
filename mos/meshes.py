@@ -55,10 +55,10 @@ def write_mesh_file(blender_object, write_dir):
 
     filepath = write_dir + '/' + mesh_path(blender_object)
 
-    bm = bmesh.new()
-    bm.from_mesh(mesh)
+    #bm = bmesh.new()
+    #bm.from_mesh(mesh)
 
-    bmesh.ops.triangulate(bm, faces=bm.faces, quad_method=2)
+    #bmesh.ops.triangulate(bm, faces=bm.faces, quad_method=2)
 
     positions = []
     normals = []
@@ -118,8 +118,8 @@ def write_mesh_file(blender_object, write_dir):
         indices = [val for sublist in faces for val in sublist]
     else:
         raise Exception(mesh.name + " must have one uv layer")
-    bm.free()
-    del bm
+    #bm.free()
+    #del bm
 
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     mesh_file = open(filepath, 'bw')
