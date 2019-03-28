@@ -70,7 +70,6 @@ def write_mesh_file(blender_object, write_dir):
         for i, tri in enumerate(mesh.loop_triangles):
             temp_faces = []
             for j, vertex_index in enumerate(tri.vertices):
-                print(len(tri.vertices))
                 position = round_3d(mesh.vertices[vertex_index].co.to_tuple())
                 if tri.use_smooth:
                     normal = round_3d(mesh.vertices[vertex_index].normal)
