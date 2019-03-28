@@ -70,11 +70,15 @@ def write_mesh_file(blender_object, write_dir):
     vertex_dict = {}
     vertex_count = 0
 
+    print(len(mesh.uv_layers))
     if len(mesh.uv_layers) >= 1:
         # for i, f in enumerate(mesh.tessfaces):
+        mesh.calc_loop_triangles()
+        print(len(mesh.loop_triangles))
         for i, f in enumerate(mesh.loop_triangles):
             temp_faces = []
             for j, v in enumerate(f.vertices):
+                print(len(f.vertices))
                 position = round_3d(mesh.vertices[v].co.to_tuple())
                 if f.use_smooth:
                     normal = round_3d(mesh.vertices[v].normal)
