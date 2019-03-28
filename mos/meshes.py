@@ -84,7 +84,10 @@ def write_mesh_file(blender_object, write_dir):
                     normal = round_3d(mesh.vertices[v].normal)
                 else:
                     normal = round_3d(f.normal.to_tuple())
-                texture_uv = list(round_2d(mesh.tessface_uv_textures[0].data[i].uv[j][0:2]))
+                #texture_uv = list(round_2d(mesh.tessface_uv_textures[0].data[i].uv[j][0:2]))
+                #texture_uv = list(round_2d(mesh.uv_layers[0].data[i].uv[j][0:2]))
+                texture_uv = list(round_2d(mesh.uv_layers[0].data[i].uv))
+
                 texture_uv[1] = 1.0 - texture_uv[1]
                 texture_uv = tuple(texture_uv) #TODO: Not nice
                 weight = mesh.vertices[v].bevel_weight;
