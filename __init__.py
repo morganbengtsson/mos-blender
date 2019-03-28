@@ -4,11 +4,13 @@ from bpy.props import StringProperty
 import bmesh
 import os
 from .mos import level, materials, meshes, entities, light_data
+from bpy.utils import register_class
+from bpy.utils import unregister_class
 
 bl_info = {
     "name":         "Mos export",
     "author":       "Morgan Bengtsson",
-    "blender":      (2, 7, 7),
+    "blender":      (2, 80, 0),
     "version":      (0, 0, 3),
     "location":     "File > Import-Export",
     "description":  "Export Mos formats",
@@ -60,19 +62,23 @@ def export_entities_menu_func(self, context):
     self.layout.operator(ExportEntitiesFormat.bl_idname, text=ExportEntitiesFormat.bl_label[7:] + " (%s)" % ExportEntitiesFormat.filename_ext)
 
 
-def register():
-    bpy.utils.register_module(__name__)
+classes = (ExportLevelFormat, ExportEntitiesFormat)
 
-    bpy.types.INFO_MT_file_export.append(export_level_menu_func)
-    bpy.types.INFO_MT_file_export.append(export_entities_menu_func)
+
+def register():
+    for cls in classes:
+        register_class(cls)
+
+    bpy.types.TOPBAR_MT_file_export.append(export_level_menu_func)
+    bpy.types.TOPBAR_MT_file_export.append(export_entities_menu_func)
 
 
 def unregister():
-    bpy.utils.unregister_module(__name__)
+    bpy.types.TOPBAR_MT_file_export.remove(export_level_menu_func)
+    bpy.types.TOPBAR_MT_file_export.remove(export_entities_menu_func)
 
-    bpy.types.INFO_MT_file_export.remove(export_level_menu_func)
-
-    bpy.types.INFO_MT_file_export.remove(export_entities_menu_func)
+    for cls in classes:
+        unregister_class(cls)
 
 
 if __name__ == "__main__":
