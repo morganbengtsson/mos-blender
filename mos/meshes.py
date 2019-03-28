@@ -55,11 +55,6 @@ def write_mesh_file(blender_object, write_dir):
 
     filepath = write_dir + '/' + mesh_path(blender_object)
 
-    #bm = bmesh.new()
-    #bm.from_mesh(mesh)
-
-    #bmesh.ops.triangulate(bm, faces=bm.faces, quad_method=2)
-
     positions = []
     normals = []
     tangents = []
@@ -70,35 +65,29 @@ def write_mesh_file(blender_object, write_dir):
     vertex_dict = {}
     vertex_count = 0
 
-    print(len(mesh.uv_layers))
     if len(mesh.uv_layers) >= 1:
-        # for i, f in enumerate(mesh.tessfaces):
         mesh.calc_loop_triangles()
-        print(len(mesh.loop_triangles))
-        for i, f in enumerate(mesh.loop_triangles):
+        for i, tri in enumerate(mesh.loop_triangles):
             temp_faces = []
-            for j, v in enumerate(f.vertices):
-                print(len(f.vertices))
-                position = round_3d(mesh.vertices[v].co.to_tuple())
-                if f.use_smooth:
-                    normal = round_3d(mesh.vertices[v].normal)
+            for j, vertex_index in enumerate(tri.vertices):
+                print(len(tri.vertices))
+                position = round_3d(mesh.vertices[vertex_index].co.to_tuple())
+                if tri.use_smooth:
+                    normal = round_3d(mesh.vertices[vertex_index].normal)
                 else:
-                    normal = round_3d(f.normal.to_tuple())
-                #texture_uv = list(round_2d(mesh.tessface_uv_textures[0].data[i].uv[j][0:2]))
-                #texture_uv = list(round_2d(mesh.uv_layers[0].data[i].uv[j][0:2]))
+                    normal = round_3d(tri.normal.to_tuple())
 
-                loop_index = f.loops[j]
-
+                loop_index = tri.loops[j]
                 texture_uv = list(round_2d(mesh.uv_layers[0].data[loop_index].uv))
 
                 texture_uv[1] = 1.0 - texture_uv[1]
-                texture_uv = tuple(texture_uv) #TODO: Not nice
-                weight = mesh.vertices[v].bevel_weight;
+                texture_uv = tuple(texture_uv)
+                weight = mesh.vertices[vertex_index].bevel_weight
 
-                key = mesh.vertices[v].index
+                key = mesh.vertices[vertex_index].index
                 vertex_index = vertex_dict.get(key)
 
-                if f.use_smooth:
+                if tri.use_smooth:
                     if vertex_index is None:  # vertex not found
                         vertex_dict[key] = vertex_count
                         positions.append(position)
@@ -129,8 +118,6 @@ def write_mesh_file(blender_object, write_dir):
         indices = [val for sublist in faces for val in sublist]
     else:
         raise Exception(mesh.name + " must have one uv layer")
-    #bm.free()
-    #del bm
 
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     mesh_file = open(filepath, 'bw')
@@ -140,12 +127,12 @@ def write_mesh_file(blender_object, write_dir):
     mesh_file.write(struct.pack('i', len(indices)))
 
     # Body
-    for v in zip(positions, normals, tangents, texture_uvs, weights):
-        mesh_file.write(struct.pack('fff', *v[0]))
-        mesh_file.write(struct.pack('fff', *v[1]))
-        mesh_file.write(struct.pack('fff', *v[2]))
-        mesh_file.write(struct.pack('ff', *v[3]))
-        mesh_file.write(struct.pack('f', v[4]))
+    for vertex_index in zip(positions, normals, tangents, texture_uvs, weights):
+        mesh_file.write(struct.pack('fff', *vertex_index[0]))
+        mesh_file.write(struct.pack('fff', *vertex_index[1]))
+        mesh_file.write(struct.pack('fff', *vertex_index[2]))
+        mesh_file.write(struct.pack('ff', *vertex_index[3]))
+        mesh_file.write(struct.pack('f', vertex_index[4]))
 
     for i in indices:
         mesh_file.write(struct.pack('I', i))
