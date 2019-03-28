@@ -73,7 +73,7 @@ def write_entity(blender_object, directory):
         entity["id"] = blender_object.as_pointer()
 
         if entity["type"] == "environment_light":
-            entity["extent"] = blender_object.empty_draw_size
+            entity["extent"] = blender_object.empty_display_size
 
         if blender_object.type == "MESH":
             entity["mesh"] = meshes.mesh_path(blender_object)
