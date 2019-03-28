@@ -46,9 +46,8 @@ def mesh_path(blender_object):
 
 def write_mesh_file(blender_object, write_dir):
     try:
-        mesh = blender_object.to_mesh(scene=bpy.context.scene,
-                                      apply_modifiers=True,
-                                      settings='PREVIEW')
+        mesh = blender_object.to_mesh(depsgraph=bpy.context.depsgraph,
+                                      apply_modifiers=True)
 
     except Exception as exception:
         print("Error in object " + blender_object.name)
