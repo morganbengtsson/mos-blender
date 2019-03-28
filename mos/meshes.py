@@ -86,7 +86,10 @@ def write_mesh_file(blender_object, write_dir):
                     normal = round_3d(f.normal.to_tuple())
                 #texture_uv = list(round_2d(mesh.tessface_uv_textures[0].data[i].uv[j][0:2]))
                 #texture_uv = list(round_2d(mesh.uv_layers[0].data[i].uv[j][0:2]))
-                texture_uv = list(round_2d(mesh.uv_layers[0].data[i].uv))
+
+                loop_index = f.loops[j]
+
+                texture_uv = list(round_2d(mesh.uv_layers[0].data[loop_index].uv))
 
                 texture_uv[1] = 1.0 - texture_uv[1]
                 texture_uv = tuple(texture_uv) #TODO: Not nice
