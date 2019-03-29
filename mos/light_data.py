@@ -8,8 +8,7 @@ def light_data_path(blender_object):
     return path.strip('/')
 
 
-def write(directory):
-    print("Writing light data.")
+def write(report, directory):
     blender_lamps = bpy.data.lights
 
     for blender_lamp in blender_lamps:
@@ -33,5 +32,5 @@ def write(directory):
         json_file = open(path, 'w')
         json.dump(light, json_file)
         json_file.close()
-        print('Wrote: ' + path)
-
+        report({'INFO'}, 'Wrote: ' + path)
+    report({'INFO'}, "Wrote all light data.")

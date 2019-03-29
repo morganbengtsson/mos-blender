@@ -16,8 +16,8 @@ def write(report, dir, filepath, scene):
     level_file = open(filepath, 'w')
     level_file.write(json.dumps(root))
     level_file.close()
-    report({'INFO'}, "Wrote level " + scene.name)
     report({'INFO'}, "Wrote: " + filepath)
+    report({'INFO'}, "Wrote level " + scene.name)
 
     entities.write(report, dir, objects)
 

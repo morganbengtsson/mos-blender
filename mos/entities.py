@@ -11,18 +11,18 @@ def get_type(blender_type):
     return "model" if blender_type in {"MESH", "EMPTY"} else "light" if blender_type == "LIGHT" else "speaker" if blender_type == "SPEAKER" else "model"
 
 
-def write_file(entity, directory, filepath):
+def write_file(report, entity, directory, filepath):
     path = directory + '/' + filepath
     os.makedirs(os.path.dirname(path), exist_ok=True)
     entity_file = open(path, 'w')
     entity_file.write(json.dumps(entity))
     entity_file.close()
-    print("Wrote: " + path)
+    report({'INFO'}, "Wrote: " + path)
 
 
-def write_entity(blender_object, directory):
+def write_entity(report, blender_object, directory):
     if blender_object.type not in {"MESH", "EMPTY", "LIGHT", "SPEAKER"}:
-        print("Not supported")
+        report({'ERROR'}, "Object type: %s, not supported" % blender_object.type)
     else:
         entity = dict()
         entity["name"] = None
@@ -92,7 +92,7 @@ def write_entity(blender_object, directory):
             if entity_child:
                 entity["children"].append(entity_path(blender_child))
 
-        write_file(entity, directory, entity_path(blender_object))
+        write_file(report, entity, directory, entity_path(blender_object))
         return entity
 
 
@@ -103,13 +103,12 @@ def entity_path(blender_object):
 
 
 def write(report, directory, objects):
-    #print("Writing entities.")
-    
-    for entity in sorted(objects, key=lambda x: x.name):
-        write_entity(entity, directory)
-    report({'INFO'}, "Wrote entities")
 
-    materials.write(directory)
-    meshes.write(directory, bpy.data.objects)
-    light_data.write(directory)
-    speakers.write(directory)
+    for entity in sorted(objects, key=lambda x: x.name):
+        write_entity(report, entity, directory)
+    report({'INFO'}, "Wrote all entities")
+
+    materials.write(report, directory)
+    meshes.write(report, directory, bpy.data.objects)
+    light_data.write(report, directory)
+    speakers.write(report, directory)

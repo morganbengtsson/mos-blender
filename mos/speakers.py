@@ -9,8 +9,8 @@ def speaker_data_path(blender_object):
     return path.strip('/')
 
 
-def write(directory):
-    print("Writing speakers.")
+def write(report, directory):
+
     blender_speakers = bpy.data.speakers
 
     for speaker in blender_speakers:
@@ -36,5 +36,6 @@ def write(directory):
         json_file = open(path, 'w')
         json.dump(light, json_file)
         json_file.close()
-        print('Wrote: ' + path)
+        report({'INFO'}, "Wrote:" + path)
+    report({'INFO'}, "Wrote all speakers.")
 

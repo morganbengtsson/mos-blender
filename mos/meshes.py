@@ -44,7 +44,7 @@ def mesh_path(blender_object):
     return path.strip('/')
 
 
-def write_mesh_file(blender_object, write_dir):
+def write_mesh_file(report, blender_object, write_dir):
     try:
         mesh = blender_object.to_mesh(depsgraph=bpy.context.depsgraph,
                                       apply_modifiers=True)
@@ -137,12 +137,12 @@ def write_mesh_file(blender_object, write_dir):
         mesh_file.write(struct.pack('I', i))
 
     mesh_file.close()
-    print('Wrote: ' + filepath)
+    report({'INFO'}, "Wrote: " + filepath)
 
 
-def write(write_dir, objects):
-    print("Writing meshes.")
+def write(report, write_dir, objects):
     objects = [o for o in objects if o.type == 'MESH']
 
     for blender_object in objects:
-        write_mesh_file(blender_object, write_dir)
+        write_mesh_file(report, blender_object, write_dir)
+    report({'INFO'}, "Wrote all meshes.")
