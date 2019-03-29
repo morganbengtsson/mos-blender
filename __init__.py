@@ -25,7 +25,7 @@ class ExportLevelFormat(bpy.types.Operator, ExportHelper):
     filename_ext = ".level"
 
     def execute(self, context):
-        level.write(os.path.dirname(self.filepath), self.filepath, context.scene)
+        level.write(self.report, os.path.dirname(self.filepath), self.filepath, context.scene)
         return {'FINISHED'}
 
 
@@ -49,7 +49,7 @@ class ExportEntitiesFormat(bpy.types.Operator, ExportHelper):
     def execute(self, context):
         blender_objects = [o for o in context.scene.objects]
         directory = os.path.dirname(self.filepath)
-        entities.write(directory, blender_objects)
+        entities.write(self.report, directory, blender_objects)
 
         return {'FINISHED'}
 

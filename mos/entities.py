@@ -102,10 +102,12 @@ def entity_path(blender_object):
     return (library_path(blender_object) + "entities/" + str(blender_object.name) + '.' + str(extension)).strip('/')
 
 
-def write(directory, objects):
-    print("Writing entities.")
+def write(report, directory, objects):
+    #print("Writing entities.")
+    
     for entity in sorted(objects, key=lambda x: x.name):
         write_entity(entity, directory)
+    report({'INFO'}, "Wrote entities")
 
     materials.write(directory)
     meshes.write(directory, bpy.data.objects)
