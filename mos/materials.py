@@ -29,6 +29,8 @@ def write(report, directory):
     blender_materials = bpy.data.materials
 
     for blender_material in blender_materials:
+        print("WRITING " + str(blender_material.name))
+        report({'INFO'}, "Writing: " + str(blender_material.name))
         node = blender_material.node_tree.nodes.get("Material Output").inputs[0].links[0].from_node
 
         albedo_input = node.inputs.get("Base Color")

@@ -22,7 +22,7 @@ def write_file(report, entity, directory, filepath):
 
 def write_entity(report, blender_object, directory):
     if blender_object.type not in {"MESH", "EMPTY", "LIGHT", "SPEAKER"}:
-        report({'ERROR'}, "Object type: %s, not supported" % blender_object.type)
+        report({'INFO'}, "Object type: %s, not supported" % blender_object.type)
     else:
         entity = dict()
         entity["name"] = None
@@ -62,7 +62,7 @@ def write_entity(report, blender_object, directory):
         if group:
             for group_object in sorted(group.objects, key=lambda x: x.name):
                 if not group_object.parent:
-                    entity_child = write_entity(group_object, directory)
+                    entity_child = write_entity(report, group_object, directory)
                     if entity_child:
                         entity["children"].append(entity_path(group_object))
 
@@ -88,7 +88,7 @@ def write_entity(report, blender_object, directory):
             entity["material"] = materials.material_path(blender_object.active_material)
 
         for blender_child in sorted(blender_object.children, key=lambda x: x.name):
-            entity_child = write_entity(blender_child, directory)
+            entity_child = write_entity(report, blender_child, directory)
             if entity_child:
                 entity["children"].append(entity_path(blender_child))
 
