@@ -3,7 +3,7 @@ import bmesh
 import struct
 import json
 import os
-
+import math
 
 def uv_from_vert_first(uv_layer, v):
     for l in v.link_loops:
@@ -71,10 +71,6 @@ def write_mesh_file(report, blender_object, write_dir):
             temp_faces = []
             for j, vertex_index in enumerate(tri.vertices):
                 position = round_3d(mesh.vertices[vertex_index].co.to_tuple())
-                if tri.use_smooth:
-                    normal = round_3d(mesh.vertices[vertex_index].normal)
-                else:
-                    normal = round_3d(tri.normal.to_tuple())
 
                 loop_index = tri.loops[j]
                 texture_uv = list(round_2d(mesh.uv_layers[0].data[loop_index].uv))
@@ -84,12 +80,13 @@ def write_mesh_file(report, blender_object, write_dir):
                 weight = mesh.vertices[vertex_index].bevel_weight
 
                 key = mesh.vertices[vertex_index].index
-                vertex_index = vertex_dict.get(key)
+                new_index = vertex_dict.get(key)
 
                 if tri.use_smooth:
-                    if vertex_index is None:  # vertex not found
+                    if new_index is None or not(math.isclose(texture_uvs[new_index][0], texture_uv[0]) and math.isclose(texture_uvs[new_index][1], texture_uv[1])):
                         vertex_dict[key] = vertex_count
                         positions.append(position)
+                        normal = round_3d(mesh.vertices[vertex_index].normal)
                         normals.append(normal)
                         texture_uvs.append(texture_uv)
                         temp_faces.append(vertex_count)
@@ -101,6 +98,7 @@ def write_mesh_file(report, blender_object, write_dir):
                         temp_faces.append(inx)
                 else:
                     positions.append(position)
+                    normal = round_3d(tri.normal.to_tuple())
                     normals.append(normal)
                     texture_uvs.append(texture_uv)
                     temp_faces.append(vertex_count)
@@ -137,6 +135,8 @@ def write_mesh_file(report, blender_object, write_dir):
         mesh_file.write(struct.pack('I', i))
 
     mesh_file.close()
+    report({'INFO'}, "Number of vertices: " + str(len(positions)))
+    report({'INFO'}, "Number of indices: " + str(len(indices)))
     report({'INFO'}, "Wrote: " + filepath)
 
 
