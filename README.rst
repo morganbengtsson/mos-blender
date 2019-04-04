@@ -19,7 +19,7 @@ There are two ways to install the addon in Blender:
 - Download the `latest code`_ as a zip file and install through the Blender preferences.
 - Use git and clone the code directly into one of Blenders *scripts/addons* directories.
 
-.. _`latest code`: archive/master.zip
+.. _`latest code`: /archive/master.zip
 
 .. _Blender-2.80: http://www.blender.org
 .. _MOS: https://github.com/morganbengtsson/mos
