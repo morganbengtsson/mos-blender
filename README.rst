@@ -1,5 +1,6 @@
 MOS Blender export
 ==================
+
 .. image:: https://img.shields.io/github/license/morganbengtsson/mos.svg
    :target: LICENCE.rst
 
