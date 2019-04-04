@@ -45,7 +45,7 @@ def write_mesh_file(report, blender_object, write_dir):
     weights = []
 
     faces = []
-    vertex_dict = {}
+    vertex_indices_dict = {}
     vertex_count = 0
 
     if len(mesh.uv_layers) >= 1:
@@ -63,11 +63,11 @@ def write_mesh_file(report, blender_object, write_dir):
                 weight = mesh.vertices[vertex_index].bevel_weight
 
                 key = mesh.vertices[vertex_index].index
-                new_index = vertex_dict.get(key)
+                new_index = vertex_indices_dict.get(key)
 
                 if tri.use_smooth:
                     if new_index is None or not(math.isclose(texture_uvs[new_index][0], texture_uv[0]) and math.isclose(texture_uvs[new_index][1], texture_uv[1])):
-                        vertex_dict[key] = vertex_count
+                        vertex_indices_dict[key] = vertex_count
                         positions.append(position)
                         normal = round_3d(mesh.vertices[vertex_index].normal)
                         normals.append(normal)
@@ -77,7 +77,7 @@ def write_mesh_file(report, blender_object, write_dir):
                         weights.append(weight)
                         vertex_count += 1
                     else:
-                        inx = vertex_dict[key]
+                        inx = vertex_indices_dict[key]
                         temp_faces.append(inx)
                 else:
                     positions.append(position)
@@ -89,11 +89,7 @@ def write_mesh_file(report, blender_object, write_dir):
                     weights.append(weight)
                     vertex_count += 1
 
-            if len(temp_faces) == 3:
-                faces.append(temp_faces)
-            else:
-                faces.append([temp_faces[0], temp_faces[1], temp_faces[2]])
-                faces.append([temp_faces[0], temp_faces[2], temp_faces[3]])
+            faces.append(temp_faces)
 
         indices = [val for sublist in faces for val in sublist]
     else:
