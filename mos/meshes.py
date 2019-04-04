@@ -1,24 +1,7 @@
 import bpy
-import bmesh
 import struct
-import json
 import os
 import math
-
-def uv_from_vert_first(uv_layer, v):
-    for l in v.link_loops:
-        uv_data = l[uv_layer]
-        return uv_data.uv
-    return None
-
-
-def has_material_index(vertex, index):
-    has_index = False
-    for face in vertex.link_faces:
-        if face.material_index == index:
-            has_index = True
-            return has_index
-    return has_index
 
 
 def round_3d(v):
