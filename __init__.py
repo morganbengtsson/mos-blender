@@ -1,9 +1,8 @@
 import bpy
 from bpy_extras.io_utils import ExportHelper
 from bpy.props import StringProperty
-import bmesh
 import os
-from .mos import level, materials, meshes, entities, light_data
+from .mos import level, entities
 from bpy.utils import register_class
 from bpy.utils import unregister_class
 
@@ -11,7 +10,7 @@ bl_info = {
     "name":         "Mos export",
     "author":       "Morgan Bengtsson",
     "blender":      (2, 80, 0),
-    "version":      (0, 0, 3),
+    "version":      (0, 1, 0),
     "location":     "File > Import-Export",
     "description":  "Export Mos formats",
     "category":     "Import-Export"

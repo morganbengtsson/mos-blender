@@ -1,7 +1,6 @@
 import json
 import bpy
 import idprop
-import os
 
 from . import materials, meshes, light_data, speakers
 from .common import *

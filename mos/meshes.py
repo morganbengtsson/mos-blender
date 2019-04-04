@@ -103,12 +103,12 @@ def write_mesh_file(report, blender_object, write_dir):
     mesh_file.write(struct.pack('i', len(indices)))
 
     # Body
-    for vertex_index in zip(positions, normals, tangents, texture_uvs, weights):
-        mesh_file.write(struct.pack('fff', *vertex_index[0]))
-        mesh_file.write(struct.pack('fff', *vertex_index[1]))
-        mesh_file.write(struct.pack('fff', *vertex_index[2]))
-        mesh_file.write(struct.pack('ff', *vertex_index[3]))
-        mesh_file.write(struct.pack('f', vertex_index[4]))
+    for vertex in zip(positions, normals, tangents, texture_uvs, weights):
+        mesh_file.write(struct.pack('fff', *vertex[0]))
+        mesh_file.write(struct.pack('fff', *vertex[1]))
+        mesh_file.write(struct.pack('fff', *vertex[2]))
+        mesh_file.write(struct.pack('ff', *vertex[3]))
+        mesh_file.write(struct.pack('f', vertex[4]))
 
     for i in indices:
         mesh_file.write(struct.pack('I', i))
