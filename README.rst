@@ -10,9 +10,9 @@ Introduction
 
 An addon for Blender-2.80_ that is used together with the MOS_ library, for exporting models, meshes, materials and levels.
 
--------
-Install
--------
+----------
+Installing
+----------
 
 There are two ways to install the addon in Blender:
 
