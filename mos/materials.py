@@ -31,50 +31,54 @@ def write(report, directory):
     for blender_material in blender_materials:
         print("WRITING " + str(blender_material.name))
         report({'INFO'}, "Writing: " + str(blender_material.name))
-        node = blender_material.node_tree.nodes.get("Material Output").inputs[0].links[0].from_node
+        try:
+            node = blender_material.node_tree.nodes.get("Material Output").inputs[0].links[0].from_node
 
-        albedo_input = node.inputs.get("Base Color")
-        albedo_map = copy_linked_map("Base Color", directory, blender_material, node)
-        albedo = (0.0, 0.0, 0.0) if not albedo_input.default_value[:3] else albedo_input.default_value[:3]
+            albedo_input = node.inputs.get("Base Color")
+            albedo_map = copy_linked_map("Base Color", directory, blender_material, node)
+            albedo = (0.0, 0.0, 0.0) if not albedo_input.default_value[:3] else albedo_input.default_value[:3]
 
-        normal_map = copy_linked_map("Normal", directory, blender_material, node)
-        metallic_map = copy_linked_map("Metallic", directory, blender_material, node)
-        roughness_map = copy_linked_map("Roughness", directory, blender_material, node)
-        ambient_occlusion_map = copy_linked_map("Ambient occlusion", directory, blender_material, node)
+            normal_map = copy_linked_map("Normal", directory, blender_material, node)
+            metallic_map = copy_linked_map("Metallic", directory, blender_material, node)
+            roughness_map = copy_linked_map("Roughness", directory, blender_material, node)
+            ambient_occlusion_map = copy_linked_map("Ambient occlusion", directory, blender_material, node)
 
-        roughness = node.inputs.get("Roughness").default_value
-        metallic = node.inputs.get("Metallic").default_value
+            roughness = node.inputs.get("Roughness").default_value
+            metallic = node.inputs.get("Metallic").default_value
 
-        opacity_node = node.inputs.get("Opacity")
-        opacity = opacity_node.default_value if opacity_node else 1.0
+            opacity_node = node.inputs.get("Opacity")
+            opacity = opacity_node.default_value if opacity_node else 1.0
 
-        emission_node = node.inputs.get("Emission")
-        emission = emission_node.default_value if emission_node else 0.0
+            emission_node = node.inputs.get("Emission")
+            emission = emission_node.default_value if emission_node else 0.0
 
-        transmission = node.inputs.get("Transmission").default_value
+            transmission = node.inputs.get("Transmission").default_value
 
-        ambient_occlusion_input = node.inputs.get("Ambient occlusion")
-        ambient_occlusion = ambient_occlusion_input.default_value if ambient_occlusion_input else 1.0
+            ambient_occlusion_input = node.inputs.get("Ambient occlusion")
+            ambient_occlusion = ambient_occlusion_input.default_value if ambient_occlusion_input else 1.0
 
-        material = {"albedo": tuple(albedo),
-                    "opacity": opacity,
-                    "transmission": transmission,
-                    "roughness": float(roughness),
-                    "metallic": float(metallic),
-                    "emission": float(emission),
-                    "ambient_occlusion": float(ambient_occlusion),
-                    "albedo_map": albedo_map,
-                    "normal_map": normal_map,
-                    "metallic_map": metallic_map,
-                    "roughness_map": roughness_map,
-                    "ambient_occlusion_map": ambient_occlusion_map}
+            material = {"albedo": tuple(albedo),
+                        "opacity": opacity,
+                        "transmission": transmission,
+                        "roughness": float(roughness),
+                        "metallic": float(metallic),
+                        "emission": float(emission),
+                        "ambient_occlusion": float(ambient_occlusion),
+                        "albedo_map": albedo_map,
+                        "normal_map": normal_map,
+                        "metallic_map": metallic_map,
+                        "roughness_map": roughness_map,
+                        "ambient_occlusion_map": ambient_occlusion_map}
 
-        path = directory + '/' + material_path(blender_material)
-        os.makedirs(os.path.dirname(path), exist_ok=True)
+            path = directory + '/' + material_path(blender_material)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
 
-        json_file = open(path, 'w')
-        json.dump(material, json_file)
-        json_file.close()
+            json_file = open(path, 'w')
+            json.dump(material, json_file)
+            json_file.close()
+
+        except Exception as e:
+            raise Exception('Error writing material ' + blender_material.name) from e
 
         report({'INFO'}, "Wrote: " + path)
         report({'INFO'}, "Wrote material " + blender_material.name)
