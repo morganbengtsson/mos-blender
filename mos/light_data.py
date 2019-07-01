@@ -12,12 +12,16 @@ def write(report, directory):
     blender_lamps = bpy.data.lights
 
     for blender_lamp in blender_lamps:
-        node = blender_lamp.node_tree.nodes.get("Emission")
-        color_input = node.inputs.get("Color")
-        color = color_input.default_value[:3]
+        if blender_lamp.use_nodes:
+            node = blender_lamp.node_tree.nodes.get("Emission")
+            color_input = node.inputs.get("Color")
+            color = color_input.default_value[:3]
 
-        strength_input = node.inputs.get("Strength")
-        strength = strength_input.default_value
+            strength_input = node.inputs.get("Strength")
+            strength = strength_input.default_value
+        else:
+            color = blender_lamp.color[:3]
+            strength = blender_lamp.energy
 
         spot_size = blender_lamp.spot_size
         spot_blend = blender_lamp.spot_blend
