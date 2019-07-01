@@ -29,12 +29,12 @@ def mesh_path(blender_object):
 
 def write_mesh_file(report, blender_object, write_dir):
     try:
-        mesh = blender_object.to_mesh(depsgraph=bpy.context.depsgraph,
-                                      apply_modifiers=True)
+        depsgraph = bpy.context.evaluated_depsgraph_get()
+        object_evaluated = blender_object.evaluated_get(depsgraph)
+        mesh = object_evaluated.data
 
     except Exception as exception:
-        print("Error in object " + blender_object.name)
-        raise exception
+        raise Exception('Error while evaluating: ' + blender_object.name) from exception
 
     filepath = write_dir + '/' + mesh_path(blender_object)
 
