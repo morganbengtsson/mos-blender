@@ -96,8 +96,11 @@ def write_entity(report, blender_object, directory):
 
 
 def entity_path(blender_object):
-    t = get_type(blender_object.type)
-    extension = blender_object.get("entity_type") or t
+    group = blender_object.instance_collection
+    if group:
+        extension = blender_object.get("entity_type") or group.get("entity_type") or get_type(blender_object.type)
+    else:
+        extension = blender_object.get("entity_type") or get_type(blender_object.type)
     return (library_path(blender_object) + "entities/" + str(blender_object.name) + '.' + str(extension)).strip('/')
 
 
