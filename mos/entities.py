@@ -55,11 +55,9 @@ def write_entity(report, blender_object, directory):
 
         entity["transform"] = transform
 
-        # group = blender_object.dupli_group
-        # TODO: Rename group
-        group = blender_object.instance_collection
-        if group:
-            for group_object in sorted(group.objects, key=lambda x: x.name):
+        collection = blender_object.instance_collection
+        if collection:
+            for group_object in sorted(collection.objects, key=lambda x: x.name):
                 if not group_object.parent:
                     entity_child = write_entity(report, group_object, directory)
                     if entity_child:
@@ -96,9 +94,9 @@ def write_entity(report, blender_object, directory):
 
 
 def entity_path(blender_object):
-    group = blender_object.instance_collection
-    if group:
-        extension = blender_object.get("entity_type") or group.get("entity_type") or get_type(blender_object.type)
+    collection = blender_object.instance_collection
+    if collection:
+        extension = blender_object.get("entity_type") or collection.get("entity_type") or get_type(blender_object.type)
     else:
         extension = blender_object.get("entity_type") or get_type(blender_object.type)
     return (library_path(blender_object) + "entities/" + str(blender_object.name) + '.' + str(extension)).strip('/')
