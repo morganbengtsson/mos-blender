@@ -32,7 +32,8 @@ def write(report, directory):
         print("WRITING " + str(blender_material.name))
         report({'INFO'}, "Writing: " + str(blender_material.name))
         try:
-            node = blender_material.node_tree.nodes.get("Material Output").inputs[0].links[0].from_node
+            #node = blender_material.node_tree.nodes.get("Material Output").inputs[0].links[0].from_node
+            node = next(n for n in blender_material.node_tree.nodes.values() if n.bl_idname == "ShaderNodeOutputMaterial").inputs[0].links[0].from_node
 
             albedo_input = node.inputs.get("Base Color")
             albedo_map = copy_linked_map("Base Color", directory, blender_material, node)
