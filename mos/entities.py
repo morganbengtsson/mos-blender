@@ -2,7 +2,7 @@ import json
 import bpy
 import idprop
 
-from . import materials, meshes, light_data, speakers
+from . import materials, meshes, light_data, sounds
 from .common import *
 
 
@@ -79,7 +79,7 @@ def write_entity(report, blender_object, directory):
             entity["light"] = light_data.light_data_path(blender_object.data)
 
         if blender_object.type == "SPEAKER":
-            entity["speaker"] = speakers.speaker_data_path(blender_object.data)
+            entity["sound"] = sounds.sound_data_path(blender_object.data)
 
         if blender_object.active_material:
             entity["material"] = materials.material_path(blender_object.active_material)
@@ -111,4 +111,4 @@ def write(report, directory, objects):
     materials.write(report, directory)
     meshes.write(report, directory, bpy.data.objects)
     light_data.write(report, directory)
-    speakers.write(report, directory)
+    sounds.write(report, directory)

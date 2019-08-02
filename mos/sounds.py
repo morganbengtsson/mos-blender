@@ -4,8 +4,8 @@ from .common import *
 from shutil import copyfile
 
 
-def speaker_data_path(blender_object):
-    path = library_path(blender_object) + "speaker_data/" + blender_object.name + ".speaker_data"
+def sound_data_path(blender_object):
+    path = library_path(blender_object) + "sound_data/" + blender_object.name + ".sound_data"
     return path.strip('/')
 
 
@@ -31,7 +31,7 @@ def write(report, directory):
                  "pitch": float(pitch),
                  "sound": filepath}
 
-        path = directory + '/' + speaker_data_path(speaker)
+        path = directory + '/' + sound_data_path(speaker)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         json_file = open(path, 'w')
         json.dump(light, json_file)
