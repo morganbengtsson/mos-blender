@@ -34,59 +34,36 @@ def write(report, directory):
         try:
             node = next(n for n in blender_material.node_tree.nodes.values() if n.bl_idname == "ShaderNodeOutputMaterial").inputs[0].links[0].from_node
 
-            if node.bl_idname == "ShaderNodeBsdfPrincipled":
-                albedo_input = node.inputs.get("Base Color")
-                albedo_map = copy_linked_map("Base Color", directory, blender_material, node)
-                albedo = (0.0, 0.0, 0.0) if not albedo_input.default_value[:3] else albedo_input.default_value[:3]
+            if node.bl_idname != "ShaderNodeBsdfPrincipled":
+                raise Exception("Material node must be Principled.")
 
-                normal_input = node.inputs.get("Normal")
-                normal_map_node = normal_input.links[0].from_node if normal_input.is_linked else None
-                normal_map = copy_linked_map("Color", directory, blender_material, normal_map_node) if normal_map_node else None
+            albedo_input = node.inputs.get("Base Color")
+            albedo_map = copy_linked_map("Base Color", directory, blender_material, node)
+            albedo = (0.0, 0.0, 0.0) if not albedo_input.default_value[:3] else albedo_input.default_value[:3]
 
-                metallic_map = copy_linked_map("Metallic", directory, blender_material, node)
-                roughness_map = copy_linked_map("Roughness", directory, blender_material, node)
-                ambient_occlusion_map = copy_linked_map("Ambient occlusion", directory, blender_material, node)
+            normal_input = node.inputs.get("Normal")
+            normal_map_node = normal_input.links[0].from_node if normal_input.is_linked else None
+            normal_map = copy_linked_map("Color", directory, blender_material, normal_map_node) if normal_map_node else None
 
-                roughness = node.inputs.get("Roughness").default_value
-                metallic = node.inputs.get("Metallic").default_value
+            metallic_map = copy_linked_map("Metallic", directory, blender_material, node)
+            roughness_map = copy_linked_map("Roughness", directory, blender_material, node)
+            ambient_occlusion_map = copy_linked_map("Ambient occlusion", directory, blender_material, node)
 
-                opacity_node = node.inputs.get("Opacity")
-                opacity = opacity_node.default_value if opacity_node else 1.0
+            roughness = node.inputs.get("Roughness").default_value
+            metallic = node.inputs.get("Metallic").default_value
+            index_of_refraction = node.inputs.get("IOR").default_value
 
-                emission_node = node.inputs.get("Emission")
-                emission_rgb = emission_node.default_value[:3] if emission_node else [0, 0, 0]
-                emission = 0.2126 * emission_rgb[0] + 0.7152 * emission_rgb[1] + 0.0722 * emission_rgb[2]
+            emission_node = node.inputs.get("Emission")
+            emission_rgb = emission_node.default_value[:3] if emission_node else [0, 0, 0]
+            emission = 0.2126 * emission_rgb[0] + 0.7152 * emission_rgb[1] + 0.0722 * emission_rgb[2]
 
-                transmission = node.inputs.get("Transmission").default_value
+            transmission = node.inputs.get("Transmission").default_value
 
-                ambient_occlusion_input = node.inputs.get("Ambient occlusion")
-                ambient_occlusion = ambient_occlusion_input.default_value if ambient_occlusion_input else 1.0
-            else:
-                albedo_input = node.inputs.get("Base Color")
-                albedo_map = copy_linked_map("Base Color", directory, blender_material, node)
-                albedo = (0.0, 0.0, 0.0) if not albedo_input.default_value[:3] else albedo_input.default_value[:3]
-
-                normal_map = copy_linked_map("Normal", directory, blender_material, node)
-                metallic_map = copy_linked_map("Metallic", directory, blender_material, node)
-                roughness_map = copy_linked_map("Roughness", directory, blender_material, node)
-                ambient_occlusion_map = copy_linked_map("Ambient occlusion", directory, blender_material, node)
-
-                roughness = node.inputs.get("Roughness").default_value
-                metallic = node.inputs.get("Metallic").default_value
-
-                opacity_node = node.inputs.get("Opacity")
-                opacity = opacity_node.default_value if opacity_node else 1.0
-
-                emission_node = node.inputs.get("Emission")
-                emission = emission_node.default_value if emission_node else 0.0
-
-                transmission = node.inputs.get("Transmission").default_value
-
-                ambient_occlusion_input = node.inputs.get("Ambient occlusion")
-                ambient_occlusion = ambient_occlusion_input.default_value if ambient_occlusion_input else 1.0
+            ambient_occlusion_input = node.inputs.get("Ambient occlusion")
+            ambient_occlusion = ambient_occlusion_input.default_value if ambient_occlusion_input else 1.0
 
             material = {"albedo": tuple(albedo),
-                        "opacity": opacity,
+                        "index_of_refraction": index_of_refraction,
                         "transmission": transmission,
                         "roughness": float(roughness),
                         "metallic": float(metallic),
