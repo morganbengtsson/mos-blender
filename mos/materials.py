@@ -5,6 +5,8 @@ from .common import *
 
 
 def copy_linked_map(input_name, directory, blender_material, node):
+    if not node:
+        return None
     node_input = node.inputs.get(input_name)
     if not node_input:
         return None
@@ -47,7 +49,6 @@ def write(report, directory):
 
             metallic_map = copy_linked_map("Metallic", directory, blender_material, node)
             roughness_map = copy_linked_map("Roughness", directory, blender_material, node)
-            ambient_occlusion_map = copy_linked_map("Ambient occlusion", directory, blender_material, node)
 
             roughness = node.inputs.get("Roughness").default_value
             metallic = node.inputs.get("Metallic").default_value
@@ -59,8 +60,11 @@ def write(report, directory):
 
             transmission = node.inputs.get("Transmission").default_value
 
-            ambient_occlusion_input = node.inputs.get("Ambient occlusion")
+            mos_node = next((n for n in blender_material.node_tree.nodes.values() if n.name == "MOS"), None)
+            ambient_occlusion_input = mos_node.inputs.get("Ambient Occlusion") if mos_node else None
             ambient_occlusion = ambient_occlusion_input.default_value if ambient_occlusion_input else 1.0
+
+            ambient_occlusion_map = copy_linked_map("Ambient Occlusion", directory, blender_material, mos_node)
 
             material = {"albedo": tuple(albedo),
                         "index_of_refraction": index_of_refraction,
