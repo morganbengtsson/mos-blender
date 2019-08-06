@@ -52,6 +52,7 @@ def write(report, directory):
 
             roughness = node.inputs.get("Roughness").default_value
             metallic = node.inputs.get("Metallic").default_value
+            alpha = node.inputs.get("Alpha").default_value
             index_of_refraction = node.inputs.get("IOR").default_value
 
             emission_node = node.inputs.get("Emission")
@@ -67,6 +68,7 @@ def write(report, directory):
             ambient_occlusion_map = copy_linked_map("Ambient Occlusion", directory, blender_material, mos_node)
 
             material = {"albedo": tuple(albedo),
+                        "alpha": float(alpha),
                         "index_of_refraction": index_of_refraction,
                         "transmission": transmission,
                         "roughness": float(roughness),
