@@ -49,16 +49,13 @@ def write(report, directory):
 
             metallic_map = copy_linked_map("Metallic", directory, blender_material, node)
             roughness_map = copy_linked_map("Roughness", directory, blender_material, node)
+            emission_map = copy_linked_map("Emission", directory, blender_material, node)
 
             roughness = node.inputs.get("Roughness").default_value
             metallic = node.inputs.get("Metallic").default_value
             alpha = node.inputs.get("Alpha").default_value
             index_of_refraction = node.inputs.get("IOR").default_value
-
-            emission_node = node.inputs.get("Emission")
-            emission_rgb = emission_node.default_value[:3] if emission_node else [0, 0, 0]
-            emission = 0.2126 * emission_rgb[0] + 0.7152 * emission_rgb[1] + 0.0722 * emission_rgb[2]
-
+            emission = node.inputs.get("Emission").default_value
             transmission = node.inputs.get("Transmission").default_value
 
             mos_node = next((n for n in blender_material.node_tree.nodes.values() if n.name == "MOS"), None)
@@ -73,12 +70,13 @@ def write(report, directory):
                         "transmission": transmission,
                         "roughness": float(roughness),
                         "metallic": float(metallic),
-                        "emission": float(emission),
+                        "emission": tuple(emission),
                         "ambient_occlusion": float(ambient_occlusion),
                         "albedo_map": albedo_map,
                         "normal_map": normal_map,
                         "metallic_map": metallic_map,
                         "roughness_map": roughness_map,
+                        "emission_map": emission_map,
                         "ambient_occlusion_map": ambient_occlusion_map}
 
             path = directory + '/' + material_path(blender_material)
