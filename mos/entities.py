@@ -7,7 +7,7 @@ from .common import *
 
 
 def get_type(blender_type):
-    return "model" if blender_type in {"MESH", "EMPTY"} else "light" if blender_type == "LIGHT" else "speaker" if blender_type == "SPEAKER" else "model"
+    return "model" if blender_type in {"MESH", "EMPTY"} else "light" if blender_type == "LIGHT" else "sound" if blender_type == "SPEAKER" else "model"
 
 
 def write_file(report, entity, directory, filepath):
@@ -31,7 +31,7 @@ def write_entity(report, blender_object, directory):
                           0, 0, 0, 1]
         entity["mesh"] = None
         entity["material"] = None
-        entity["speaker"] = None
+        entity["sound"] = None
         entity["children"] = list()
         entity["type"] = "model"
         entity["id"] = None

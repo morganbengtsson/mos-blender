@@ -37,5 +37,5 @@ def write(report, directory):
         json.dump(light, json_file)
         json_file.close()
         report({'INFO'}, "Wrote:" + path)
-    report({'INFO'}, "Wrote all speakers.")
+    report({'INFO'}, "Wrote all speakers/sounds.")
 
