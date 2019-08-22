@@ -10,16 +10,35 @@ def copy_linked_map(input_name, directory, blender_material, node):
     node_input = node.inputs.get(input_name)
     if not node_input:
         return None
-    filepath = None
+    image_path = None
+    texture_path = None
     if node_input.is_linked:
-        image = node_input.links[0].from_node.image
+        texture_node = node_input.links[0].from_node
+        image = texture_node.image
         filename = image.name
         source_filepath = bpy.path.abspath(image.filepath, library=image.library)
-        filepath = library_path(blender_material) + "textures/" + filename
-        full_filepath = directory + '/' + filepath
-        os.makedirs(os.path.dirname(full_filepath), exist_ok=True)
-        copyfile(source_filepath, full_filepath)
-    return filepath
+        image_path = library_path(blender_material) + "images/" + filename
+        full_image_path = directory + '/' + image_path
+        os.makedirs(os.path.dirname(full_image_path), exist_ok=True)
+        copyfile(source_filepath, full_image_path)
+
+        interpolation = texture_node.interpolation.lower()
+        if interpolation not in {"linear", "closest"}:
+            raise Exception("Interpolation not supported")
+
+        texture = {"filtering": interpolation,
+                   "image": image_path}
+
+        texture_path = library_path(blender_material) + "textures/" + image.name + ".texture"
+        texture_path = texture_path.strip('/')
+
+        path = directory + '/' + texture_path
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        json_file = open(path, 'w')
+        json.dump(texture, json_file)
+        json_file.close()
+
+    return texture_path
 
 
 def material_path(blender_material: bpy.types.Material):
