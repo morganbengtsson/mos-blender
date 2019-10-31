@@ -88,7 +88,8 @@ def write_entity(report, blender_object, directory):
             for row in projection_matrix.col:
                 transform.extend(list(row))
             entity["projection"] = transform
-            entity["focus_distance"] = blender_object.data.dof.focus_distance
+            focus_distance = (blender_object.data.dof.focus_object.location - blender_object.location).length if blender_object.data.dof.focus_object else blender_object.data.dof.focus_distance
+            entity["focus_distance"] = focus_distance
 
         if blender_object.type == "MESH":
             entity["mesh"] = meshes.mesh_path(blender_object)
