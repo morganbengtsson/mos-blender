@@ -82,7 +82,12 @@ def write_entity(report, blender_object, directory):
             entity["extent"] = blender_object.empty_display_size
 
         if entity["type"] == "camera":
-            projection_matrix = blender_object.calc_matrix_camera(depsgraph=bpy.context.evaluated_depsgraph_get())
+            scene = bpy.context.scene
+            aspect = scene.render.resolution_x / scene.render.resolution_y
+
+            entity["aspect"] = aspect
+
+            projection_matrix = blender_object.calc_matrix_camera(depsgraph=bpy.context.evaluated_depsgraph_get(), scale_x=aspect)
 
             transform = list()
             for row in projection_matrix.col:
