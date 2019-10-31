@@ -22,11 +22,14 @@ def copy_linked_map(input_name, directory, blender_material, node):
         os.makedirs(os.path.dirname(full_image_path), exist_ok=True)
         copyfile(source_filepath, full_image_path)
 
-        interpolation = texture_node.interpolation.lower()
-        if interpolation not in {"linear", "closest"}:
+        texture_filter = texture_node.interpolation.lower()
+        if texture_filter not in {"linear", "closest"}:
             raise Exception("Interpolation not supported")
 
-        texture = {"filtering": interpolation,
+        texture_wrap = "repeat" if texture_node.extension.lower() == "repeat" else "clamp"
+
+        texture = {"filter": texture_filter,
+                   "wrap": texture_wrap,
                    "image": image_path}
 
         texture_path = library_path(blender_material) + "textures/" + image.name + ".texture"
