@@ -81,6 +81,15 @@ def write_entity(report, blender_object, directory):
         if entity["type"] == "environment_light":
             entity["extent"] = blender_object.empty_display_size
 
+        if entity["type"] == "camera":
+            projection_matrix = blender_object.calc_matrix_camera(depsgraph=bpy.context.evaluated_depsgraph_get())
+
+            transform = list()
+            for row in projection_matrix.col:
+                transform.extend(list(row))
+            entity["projection"] = transform
+            entity["focus_distance"] = blender_object.data.dof.focus_distance
+
         if blender_object.type == "MESH":
             entity["mesh"] = meshes.mesh_path(blender_object)
 
