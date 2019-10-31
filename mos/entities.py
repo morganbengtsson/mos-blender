@@ -6,8 +6,17 @@ from . import materials, meshes, light_data, sounds
 from .common import *
 
 
+type_map = {
+  "MESH": "model",
+  "EMTPY": "model",
+  "LIGHT": "light",
+  "SPEAKER": "sound",
+  "CAMERA": "camera",
+}
+
+
 def get_type(blender_type):
-    return "model" if blender_type in {"MESH", "EMPTY"} else "light" if blender_type == "LIGHT" else "sound" if blender_type == "SPEAKER" else "model"
+    return type_map.get(blender_type) or "model"
 
 
 def write_file(report, entity, directory, filepath):
@@ -20,7 +29,7 @@ def write_file(report, entity, directory, filepath):
 
 
 def write_entity(report, blender_object, directory):
-    if blender_object.type not in {"MESH", "EMPTY", "LIGHT", "SPEAKER"}:
+    if blender_object.type not in {"MESH", "EMPTY", "LIGHT", "SPEAKER", "CAMERA"}:
         report({'INFO'}, "Object type: %s, not supported" % blender_object.type)
     else:
         entity = dict()
