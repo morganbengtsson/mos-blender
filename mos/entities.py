@@ -95,6 +95,8 @@ def write_entity(report, blender_object, directory):
             entity["projection"] = transform
             focus_distance = (blender_object.data.dof.focus_object.location - blender_object.location).length if blender_object.data.dof.focus_object else blender_object.data.dof.focus_distance
             entity["focus_distance"] = focus_distance
+            entity["far"] = blender_object.data.clip_end
+            entity["near"] = blender_object.data.clip_start
 
         if blender_object.type == "MESH":
             entity["mesh"] = meshes.mesh_path(blender_object)
