@@ -87,7 +87,8 @@ def write_entity(report, blender_object, directory):
 
             entity["aspect"] = aspect
 
-            projection_matrix = blender_object.calc_matrix_camera(depsgraph=bpy.context.evaluated_depsgraph_get(), scale_x=aspect)
+            projection_matrix = blender_object.calc_matrix_camera(depsgraph=bpy.context.evaluated_depsgraph_get(),
+                                                                  scale_x=aspect)
 
             transform = list()
             for row in projection_matrix.col:
