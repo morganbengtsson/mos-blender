@@ -62,47 +62,48 @@ def write(report, directory):
                 raise Exception("Material node must be Principled.")
 
             albedo_input = node.inputs.get("Base Color")
+
             albedo_map = copy_linked_map("Base Color", directory, blender_material, node)
-            albedo = (0.0, 0.0, 0.0) if not albedo_input.default_value[:3] else albedo_input.default_value[:3]
+            albedo_value = (0.0, 0.0, 0.0) if not albedo_input.default_value[:3] else albedo_input.default_value[:3]
 
             normal_input = node.inputs.get("Normal")
             normal_map_node = normal_input.links[0].from_node if normal_input.is_linked else None
             normal_map = copy_linked_map("Color", directory, blender_material, normal_map_node) if normal_map_node else None
 
             metallic_map = copy_linked_map("Metallic", directory, blender_material, node)
-            roughness_map = copy_linked_map("Roughness", directory, blender_material, node)
-            emission_map = copy_linked_map("Emission", directory, blender_material, node)
+            metallic_value = node.inputs.get("Metallic").default_value
 
-            roughness = node.inputs.get("Roughness").default_value
-            metallic = node.inputs.get("Metallic").default_value
-            alpha = node.inputs.get("Alpha").default_value
-            index_of_refraction = node.inputs.get("IOR").default_value
-            emission = node.inputs.get("Emission").default_value
-            transmission = node.inputs.get("Transmission").default_value
+            roughness_map = copy_linked_map("Roughness", directory, blender_material, node)
+            roughness_value = node.inputs.get("Roughness").default_value
+
+            emission_map = copy_linked_map("Emission", directory, blender_material, node)
+            emission_value = node.inputs.get("Emission").default_value
 
             mos_node = next((n for n in blender_material.node_tree.nodes.values() if n.name == "MOS"), None)
             ambient_occlusion_input = mos_node.inputs.get("Ambient Occlusion") if mos_node else None
-            ambient_occlusion = ambient_occlusion_input.default_value if ambient_occlusion_input else 1.0
-
+            ambient_occlusion_value = ambient_occlusion_input.default_value if ambient_occlusion_input else 1.0
             ambient_occlusion_map = copy_linked_map("Ambient Occlusion", directory, blender_material, mos_node)
 
-            material = {"albedo": tuple(albedo),
+            alpha = node.inputs.get("Alpha").default_value
+            index_of_refraction = node.inputs.get("IOR").default_value
+            transmission = node.inputs.get("Transmission").default_value
+
+
+            material = {"albedo": {"value": tuple(albedo_value), "texture": albedo_map},
+                        "roughness": {"value": float(roughness_value), "texture": roughness_map},
+                        "metallic": {"value": float(metallic_value), "texture": metallic_map},
+                        "emission": {"value": tuple(emission_value), "texture": emission_map},
+                        "ambient_occlusion": {"value": float(ambient_occlusion_value),
+                                              "texture": ambient_occlusion_map},
+                        "normal": {"texture": normal_map},
                         "alpha": float(alpha),
                         "index_of_refraction": index_of_refraction,
                         "transmission": transmission,
-                        "roughness": float(roughness),
-                        "metallic": float(metallic),
-                        "emission": tuple(emission),
-                        "ambient_occlusion": float(ambient_occlusion),
-                        "albedo_map": albedo_map,
-                        "normal_map": normal_map,
-                        "metallic_map": metallic_map,
-                        "roughness_map": roughness_map,
-                        "emission_map": emission_map,
-                        "ambient_occlusion_map": ambient_occlusion_map}
+                        }
 
             path = directory + '/' + material_path(blender_material)
             os.makedirs(os.path.dirname(path), exist_ok=True)
+
 
             json_file = open(path, 'w')
             json.dump(material, json_file)
