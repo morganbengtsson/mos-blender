@@ -42,7 +42,6 @@ def write_mesh_file(report, blender_object, write_dir):
     normals = []
     tangents = []
     texture_uvs = []
-    weights = []
 
     faces = []
     vertex_indices_dict = {}
@@ -74,7 +73,6 @@ def write_mesh_file(report, blender_object, write_dir):
                         texture_uvs.append(texture_uv)
                         temp_faces.append(vertex_count)
                         tangents.append((0.0, 0.0, 0.0))
-                        weights.append(weight)
                         vertex_count += 1
                     else:
                         inx = vertex_indices_dict[key]
@@ -86,7 +84,6 @@ def write_mesh_file(report, blender_object, write_dir):
                     texture_uvs.append(texture_uv)
                     temp_faces.append(vertex_count)
                     tangents.append((0.0, 0.0, 0.0))
-                    weights.append(weight)
                     vertex_count += 1
 
             faces.append(temp_faces)
@@ -103,12 +100,11 @@ def write_mesh_file(report, blender_object, write_dir):
     mesh_file.write(struct.pack('i', len(indices)))
 
     # Body
-    for vertex in zip(positions, normals, tangents, texture_uvs, weights):
+    for vertex in zip(positions, normals, tangents, texture_uvs):
         mesh_file.write(struct.pack('fff', *vertex[0]))
         mesh_file.write(struct.pack('fff', *vertex[1]))
         mesh_file.write(struct.pack('fff', *vertex[2]))
         mesh_file.write(struct.pack('ff', *vertex[3]))
-        mesh_file.write(struct.pack('f', vertex[4]))
 
     for i in indices:
         mesh_file.write(struct.pack('I', i))
