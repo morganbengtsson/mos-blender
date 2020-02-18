@@ -7,7 +7,8 @@ from . import materials, entities, meshes, light_data
 
 def write(report, dir, filepath, scene):
     objects = scene.objects
-    blender_objects = [o for o in objects if not o.parent and o.type in {"MESH", "EMPTY", "LIGHT", "SPEAKER", "CAMERA"}]
+    blender_objects = [o for o in objects if
+                       not o.parent and o.type in entities.type_map.keys()]
     blender_objects = sorted(blender_objects, key=lambda x: x.name, reverse=False)
     
     root = list()

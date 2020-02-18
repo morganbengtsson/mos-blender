@@ -8,10 +8,11 @@ from .common import *
 
 type_map = {
   "MESH": "model",
-  "EMTPY": "model",
+  "EMPTY": "model",
   "LIGHT": "light",
   "SPEAKER": "sound",
   "CAMERA": "camera",
+  "LIGHT_PROBE": "light_probe"
 }
 
 
@@ -29,7 +30,7 @@ def write_file(report, entity, directory, filepath):
 
 
 def write_entity(report, blender_object, directory):
-    if blender_object.type not in {"MESH", "EMPTY", "LIGHT", "SPEAKER", "CAMERA"}:
+    if blender_object.type not in type_map.keys():
         report({'INFO'}, "Object type: %s, not supported" % blender_object.type)
     else:
         entity = dict()
@@ -107,6 +108,11 @@ def write_entity(report, blender_object, directory):
 
         if blender_object.type == "SPEAKER":
             entity["sound"] = sounds.sound_data_path(blender_object.data)
+
+        if blender_object.type == "LIGHT_PROBE":
+            entity["size"] = blender_object.data.influence_distance
+            entity["falloff"] = blender_object.data.falloff
+            entity["intensity"] = blender_object.data.intensity
 
         if blender_object.active_material:
             entity["material"] = materials.material_path(blender_object.active_material)
