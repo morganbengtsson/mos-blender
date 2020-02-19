@@ -12,7 +12,7 @@ type_map = {
   "LIGHT": "light",
   "SPEAKER": "sound",
   "CAMERA": "camera",
-  "LIGHT_PROBE": "light_probe"
+  "LIGHT_PROBE": "environment_light"
 }
 
 
