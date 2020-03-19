@@ -25,11 +25,15 @@ def write(report, directory):
 
         spot_size = blender_lamp.spot_size
         spot_blend = blender_lamp.spot_blend
+        near = blender_lamp.shadow_buffer_clip_start
+        far = blender_lamp.cutoff_distance
 
         light = {"color": tuple(color),
                  "strength": float(strength),
                  "size": float(spot_size),
-                 "blend": float(spot_blend)}
+                 "blend": float(spot_blend),
+                 "near": float(near),
+                 "far": float(far)}
 
         path = directory + '/' + light_data_path(blender_lamp)
         os.makedirs(os.path.dirname(path), exist_ok=True)
