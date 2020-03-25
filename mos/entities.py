@@ -113,6 +113,8 @@ def write_entity(report, blender_object, directory):
             entity["size"] = blender_object.data.influence_distance
             entity["falloff"] = blender_object.data.falloff
             entity["intensity"] = blender_object.data.intensity
+            entity["near"] = blender_object.data.clip_start
+            entity["far"] = blender_object.data.clip_end
 
         if blender_object.active_material:
             entity["material"] = materials.material_path(blender_object.active_material)
