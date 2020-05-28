@@ -39,6 +39,8 @@ def write_entity(report, blender_object, directory):
                           0, 1, 0, 0,
                           0, 0, 1, 0,
                           0, 0, 0, 1]
+        entity["position"] = [0, 0, 0]
+        entity["rotation"] = [0, 0, 0, 1] #Quaternion
         entity["mesh"] = None
         entity["material"] = None
         entity["sound"] = None
@@ -64,6 +66,9 @@ def write_entity(report, blender_object, directory):
             transform.extend(list(row))
 
         entity["transform"] = transform
+
+        entity["position"] = list(blender_object.location)
+        entity["rotation"] = list(blender_object.rotation_quaternion)
 
         collection = blender_object.instance_collection
         if collection:
