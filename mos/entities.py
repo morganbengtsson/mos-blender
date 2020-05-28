@@ -51,7 +51,7 @@ def write_entity(report, blender_object, directory):
 
         keys = blender_object.keys()
         for key in keys:
-            if not key.startswith("_") and not key.startswith("cycles"):
+            if not key.startswith("_") and not key.startswith("cycles") and not type(blender_object[key]) is idprop.types.IDPropertyGroup:
                 if type(blender_object[key]) is idprop.types.IDPropertyArray:
                     entity[key] = list(blender_object[key])
                 else:
