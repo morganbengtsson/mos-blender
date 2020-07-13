@@ -2,22 +2,28 @@ import json
 import bpy
 import idprop
 
-from . import materials, meshes, light_data, sounds
+from . import materials, meshes, spot_lights, directional_lights, sounds
 from .common import *
 
 
 type_map = {
   "MESH": "model",
   "EMPTY": "model",
-  "LIGHT": "light",
   "SPEAKER": "sound",
   "CAMERA": "camera",
+  "LIGHT" : "light",
   "LIGHT_PROBE": "environment_light"
 }
 
 
-def get_type(blender_type):
-    return type_map.get(blender_type) or "model"
+def get_type(blender_object):
+    if (blender_object.type == "LIGHT"):
+        if (blender_object.data.type == "SPOT"):
+            return "spot_light"
+        elif (blender_object.data.type == "SUN"):
+            return "directional_light"
+
+    return type_map.get(blender_object.type) or "model"
 
 
 def write_file(report, entity, directory, filepath):
@@ -78,7 +84,7 @@ def write_entity(report, blender_object, directory):
                     if entity_child:
                         entity["children"].append(entity_path(group_object))
 
-        extension = get_type(blender_object.type)
+        extension = get_type(blender_object)
 
         entity["type"] = blender_object.get("entity_type") or extension
 
@@ -109,7 +115,11 @@ def write_entity(report, blender_object, directory):
             entity["mesh"] = meshes.mesh_path(blender_object)
 
         if blender_object.type == "LIGHT":
-            entity["light"] = light_data.light_data_path(blender_object.data)
+            if (blender_object.data.type == "SPOT") :
+                entity["light"] = spot_lights.spot_light_path(blender_object.data)
+            elif (blender_object.data.type == "SUN"):
+                entity["light"] = directional_lights.directional_light_path(blender_object.data)
+
 
         if blender_object.type == "SPEAKER":
             entity["sound"] = sounds.sound_data_path(blender_object.data)
@@ -136,9 +146,9 @@ def write_entity(report, blender_object, directory):
 def entity_path(blender_object):
     collection = blender_object.instance_collection
     if collection:
-        extension = blender_object.get("entity_type") or collection.get("entity_type") or get_type(blender_object.type)
+        extension = blender_object.get("entity_type") or collection.get("entity_type") or get_type(blender_object)
     else:
-        extension = blender_object.get("entity_type") or get_type(blender_object.type)
+        extension = blender_object.get("entity_type") or get_type(blender_object)
     return (library_path(blender_object) + "entities/" + str(blender_object.name) + '.' + str(extension)).strip('/')
 
 
@@ -150,5 +160,6 @@ def write(report, directory, objects):
 
     materials.write(report, directory)
     meshes.write(report, directory, bpy.data.objects)
-    light_data.write(report, directory)
+    spot_lights.write(report, directory)
+    directional_lights.write(report, directory)
     sounds.write(report, directory)

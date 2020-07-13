@@ -3,15 +3,15 @@ import json
 from .common import *
 
 
-def light_data_path(blender_object):
-    path = library_path(blender_object) + "light_data/" + blender_object.name + ".light_data"
+def spot_light_path(blender_object):
+    path = library_path(blender_object) + "spot_lights/" + blender_object.name + ".spot_light"
     return path.strip('/')
 
 
 def write(report, directory):
-    blender_lamps = bpy.data.lights
+    blender_spot_lights = [l for l in bpy.data.lights if l.type == "SPOT"]
 
-    for blender_lamp in blender_lamps:
+    for blender_lamp in blender_spot_lights:
         if blender_lamp.use_nodes:
             node = blender_lamp.node_tree.nodes.get("Emission")
             color_input = node.inputs.get("Color")
@@ -35,10 +35,10 @@ def write(report, directory):
                  "near": float(near),
                  "far": float(far)}
 
-        path = directory + '/' + light_data_path(blender_lamp)
+        path = directory + '/' + spot_light_path(blender_lamp)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         json_file = open(path, 'w')
         json.dump(light, json_file)
         json_file.close()
         report({'INFO'}, 'Wrote: ' + path)
-    report({'INFO'}, "Wrote all light data.")
+    report({'INFO'}, "Wrote spot lights.")
