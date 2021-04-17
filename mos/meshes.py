@@ -42,6 +42,8 @@ def write_mesh_file(report, blender_object, write_dir):
     normals = []
     tangents = []
     texture_uvs = []
+    groups = []
+    weights = []
 
     faces = []
     vertex_indices_dict = {}
@@ -59,7 +61,18 @@ def write_mesh_file(report, blender_object, write_dir):
 
                 texture_uv[1] = 1.0 - texture_uv[1]
                 texture_uv = tuple(texture_uv)
-                weight = mesh.vertices[vertex_index].bevel_weight
+                
+                vertex = mesh.vertices[vertex_index]
+                bevel_weight = vertex.bevel_weight
+
+                vertex_groups = [0, 0, 0, 0]
+                vertex_weights = [0.0, 0.0, 0.0, 0.0]
+                for k, group in enumerate(vertex.groups[:4]):
+                    vertex_groups[k] = group.group
+                    vertex_weights[k] = group.weight
+
+                print(vertex_groups)
+                print(vertex_weights)                
 
                 key = mesh.vertices[vertex_index].index
                 new_index = vertex_indices_dict.get(key)
@@ -73,6 +86,8 @@ def write_mesh_file(report, blender_object, write_dir):
                         texture_uvs.append(texture_uv)
                         temp_faces.append(vertex_count)
                         tangents.append((0.0, 0.0, 0.0))
+                        groups.append(vertex_groups)
+                        weights.append(vertex_weights)
                         vertex_count += 1
                     else:
                         inx = vertex_indices_dict[key]
@@ -84,6 +99,8 @@ def write_mesh_file(report, blender_object, write_dir):
                     texture_uvs.append(texture_uv)
                     temp_faces.append(vertex_count)
                     tangents.append((0.0, 0.0, 0.0))
+                    groups.append(vertex_groups)
+                    weights.append(vertex_weights)
                     vertex_count += 1
 
             faces.append(temp_faces)
@@ -100,11 +117,14 @@ def write_mesh_file(report, blender_object, write_dir):
     mesh_file.write(struct.pack('i', len(indices)))
 
     # Body
-    for vertex in zip(positions, normals, tangents, texture_uvs):
+    for vertex in zip(positions, normals, tangents, texture_uvs, groups, weights):
         mesh_file.write(struct.pack('fff', *vertex[0]))
         mesh_file.write(struct.pack('fff', *vertex[1]))
         mesh_file.write(struct.pack('fff', *vertex[2]))
         mesh_file.write(struct.pack('ff', *vertex[3]))
+        mesh_file.write(struct.pack('iiii', *vertex[4]))
+        mesh_file.write(struct.pack('ffff', *vertex[5]))
+
 
     for i in indices:
         mesh_file.write(struct.pack('I', i))
