@@ -54,6 +54,15 @@ def write_entity(report, blender_object, directory):
         entity["type"] = "model"
         entity["id"] = None
         entity["light"] = None
+        entity["bones"] = []
+
+
+        armature = blender_object.find_armature()
+        if armature:
+            for bone in armature.data.bones:
+                print(bone.matrix_local)
+                entity["bones"].append(mat_to_list(bone.matrix_local))
+
 
         keys = blender_object.keys()
         for key in keys:
@@ -65,11 +74,7 @@ def write_entity(report, blender_object, directory):
 
         entity["name"] = blender_object.name
 
-        transform_matrix = blender_object.matrix_local
-
-        transform = list()
-        for row in transform_matrix.col:
-            transform.extend(list(row))
+        transform = mat_to_list(blender_object.matrix_local)
 
         entity["transform"] = transform
 
