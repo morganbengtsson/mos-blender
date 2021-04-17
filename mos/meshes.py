@@ -2,6 +2,7 @@ import bpy
 import struct
 import os
 import math
+from collections import namedtuple
 
 
 def round_3d(v):
@@ -38,13 +39,11 @@ def write_mesh_file(report, blender_object, write_dir):
 
     filepath = write_dir + '/' + mesh_path(blender_object)
 
-    positions = []
-    normals = []
-    tangents = []
-    texture_uvs = []
-    groups = []
-    weights = []
+    fields = ("position", "normal", "tangent", "uv", "groups", "weights")
+    Vertex = namedtuple("Vertex", fields)
 
+    vertices = []
+    indices = []
     faces = []
     vertex_indices_dict = {}
     vertex_count = 0
@@ -62,12 +61,12 @@ def write_mesh_file(report, blender_object, write_dir):
                 texture_uv[1] = 1.0 - texture_uv[1]
                 texture_uv = tuple(texture_uv)
                 
-                vertex = mesh.vertices[vertex_index]
-                bevel_weight = vertex.bevel_weight
+                blender_vertex = mesh.vertices[vertex_index]
+                bevel_weight = blender_vertex.bevel_weight
 
                 vertex_groups = [0, 0, 0, 0]
                 vertex_weights = [0.0, 0.0, 0.0, 0.0]
-                for k, group in enumerate(vertex.groups[:4]):
+                for k, group in enumerate(blender_vertex.groups[:4]):
                     vertex_groups[k] = group.group
                     vertex_weights[k] = group.weight
 
@@ -79,28 +78,31 @@ def write_mesh_file(report, blender_object, write_dir):
 
                 if tri.use_smooth:
                     if new_index is None or not(math.isclose(texture_uvs[new_index][0], texture_uv[0]) and math.isclose(texture_uvs[new_index][1], texture_uv[1])):
-                        vertex_indices_dict[key] = vertex_count
-                        positions.append(position)
-                        normal = round_3d(mesh.vertices[vertex_index].normal)
-                        normals.append(normal)
-                        texture_uvs.append(texture_uv)
+                        vertex = Vertex(
+                            position = position,
+                            normal = round_3d(mesh.vertices[vertex_index].normal),
+                            uv = texture_uv,
+                            tangent = (0.0, 0.0, 0.0),
+                            groups = vertex_groups,
+                            weights = vertex_weights
+                        )
+
                         temp_faces.append(vertex_count)
-                        tangents.append((0.0, 0.0, 0.0))
-                        groups.append(vertex_groups)
-                        weights.append(vertex_weights)
                         vertex_count += 1
                     else:
                         inx = vertex_indices_dict[key]
                         temp_faces.append(inx)
                 else:
-                    positions.append(position)
-                    normal = round_3d(tri.normal.to_tuple())
-                    normals.append(normal)
-                    texture_uvs.append(texture_uv)
+                    vertex = Vertex(
+                        position = position,
+                        normal = round_3d(tri.normal.to_tuple()),
+                        uv = texture_uv,
+                        tangent = (0.0, 0.0, 0.0),
+                        groups = vertex_groups,
+                        weights = vertex_weights
+                    )
+
                     temp_faces.append(vertex_count)
-                    tangents.append((0.0, 0.0, 0.0))
-                    groups.append(vertex_groups)
-                    weights.append(vertex_weights)
                     vertex_count += 1
 
             faces.append(temp_faces)
@@ -113,24 +115,25 @@ def write_mesh_file(report, blender_object, write_dir):
     mesh_file = open(filepath, 'bw')
 
     # Header
-    mesh_file.write(struct.pack('i', len(positions)))
+    mesh_file.write(struct.pack('i', len(vertices)))
     mesh_file.write(struct.pack('i', len(indices)))
 
     # Body
-    for vertex in zip(positions, normals, tangents, texture_uvs, groups, weights):
-        mesh_file.write(struct.pack('fff', *vertex[0]))
-        mesh_file.write(struct.pack('fff', *vertex[1]))
-        mesh_file.write(struct.pack('fff', *vertex[2]))
-        mesh_file.write(struct.pack('ff', *vertex[3]))
-        mesh_file.write(struct.pack('iiii', *vertex[4]))
-        mesh_file.write(struct.pack('ffff', *vertex[5]))
+    #for vertex in zip(positions, normals, tangents, texture_uvs, groups, weights):
+    for vertex in vertices:
+        mesh_file.write(struct.pack('fff', *vertex.position))
+        mesh_file.write(struct.pack('fff', *vertex.normal))
+        mesh_file.write(struct.pack('fff', *vertex.tangent))
+        mesh_file.write(struct.pack('ff', *vertex.uv))
+        mesh_file.write(struct.pack('IIII', *vertex.groups))
+        mesh_file.write(struct.pack('ffff', *vertex.weights))
 
 
     for i in indices:
         mesh_file.write(struct.pack('I', i))
 
     mesh_file.close()
-    report({'INFO'}, "Number of vertices: " + str(len(positions)))
+    report({'INFO'}, "Number of vertices: " + str(len(vertices)))
     report({'INFO'}, "Number of indices: " + str(len(indices)))
     report({'INFO'}, "Wrote: " + filepath)
 
